@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="css/verify.css">
+    <style>
+        /*登陆表单样式 start*/
+        .loginForm {
+            margin-left: 35%;
+            margin-top: 1%;
+            background-color: #e7e7e7;
+            width: 400px;
+            height: 500px;
+            float: left;
+            z-index: 9999;
+            position: fixed;
+            opacity: 0.75;
+        }
+
+        .usernameDiv {
+            width: 300px;
+            height: 40px;
+            padding-left: 130px;
+            padding-top: 30px;
+
+        }
+
+        .adminInput {
+            width: 220px;
+            height: 40px;
+            font-size: 15px;
+            border-radius: 0.5em;
+            /*margin-left: auto;*/
+            /*border: 1px solid #cccccc;*/
+        }
+
+        .passwordDiv {
+            width: 300px;
+            height: 40px;
+            padding-left: 130px;
+            padding-top: 28px;
+        }
+
+        .cardDiv {
+            width: 120px;
+            height: 40px;
+            padding-top: 28px;
+            padding-left: 14px;
+            float: left;
+        }
+
+        .codeDiv {
+            width: 100px;
+            height: 40px;
+            padding-top: 28px;
+            padding-right: 20px;
+            float: left;
+        }
+
+        .codeInput {
+            width: 80px;
+            height: 40px;
+            font-size: 15px;
+            border-radius: 0em 0.5em 0.5em 0em;
+            /*验证码样式*/
+            font-family: Arial;
+            font-style: italic;
+            font-weight: bold;
+            /*border: 0;*/
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        i {
+            position: absolute;
+        }
+
+        .adminIcon {
+            font-size: 22px;
+            margin-top: 8px;
+            margin-left: 180px;
+        }
+
+        .usernameLabel {
+            width: 60px;
+            height: 30px;
+            font-size: 16px;
+            float: left;
+            margin-left: 55px;
+            margin-top: 40px;
+        }
+
+        .usernameWrapDiv {
+            width: 400px;
+            height: 70px;
+        }
+
+        /*登陆表单样式 end*/
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo" style="color: #FFFFFF;font-size: 20px;">信息管理后台</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="login">登录</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <img src="images/back.jpg" style="width: 100%;height: 90%;position: absolute;">
+        <div class="loginForm">
+            <form class="layui-form" id="form">
+                <div class="usernameWrapDiv" style="margin-top: -10px;">
+                    <div class="usernameLabel">
+                        <label>用户名:</label>
+                    </div>
+                    <div class="usernameDiv">
+                        <i class="layui-icon layui-icon-username adminIcon"></i>
+                        <input type="text" name="username" id="username" lay-verify="title" autocomplete="off"
+                               placeholder="请输入用户名" class="layui-input adminInput">
+                    </div>
+                </div>
+                <div class="usernameWrapDiv">
+                    <div class="usernameLabel" style="margin-top: 25px;">
+                        <label>密&emsp;码:</label>
+                    </div>
+                    <div class="passwordDiv" style="padding-top: 18px;">
+                        <i class="layui-icon layui-icon-password adminIcon"></i>
+                        <input type="password" name="password" id="password" lay-verify="password" placeholder="请输入密码"
+                               autocomplete="off" class="layui-input adminInput">
+                    </div>
+                </div>
+
+                <div class="usernameWrapDiv">
+                    <div class="usernameLabel" style="margin-top: 18px;">
+                        <label>手机号:</label>
+                    </div>
+                    <div class="usernameDiv" style="padding-top: 10px;">
+                        <input type="text" placeholder="请输入手机号" lay-verify="phone" autocomplete="off" id="phone"
+                               name="phone"
+                               class="layui-input adminInput">
+                    </div>
+                </div>
+                <div class="usernameWrapDiv">
+                    <div class="usernameLabel" style="margin-top: 7px;">
+                        <label>验证码:</label>
+                    </div>
+                    <div class="cardDiv" style="padding-top: 0px;">
+                        <input type="text" placeholder="请输入验证码" autocomplete="off" id="code" name="code" maxlength="6"
+                               lay-verify="code" class="layui-input adminInput">
+                    </div>
+                    <div class="codeDiv" style="padding-top: 0px;">
+                        <input type="button" class="layui-input codeInput" value="获取" id="sendBtn" style="width: 100px;">
+                    </div>
+                </div>
+                <div id="mpanel5" style="position: relative;left: 50px;top: -10px"></div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">登&emsp;&emsp;录</button>
+                        <button type="button" class="layui-btn" id="forget">忘记密码</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="layui-footer" style="left: 0">
+        <!-- 底部固定区域 -->
+        © 展华科技
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/md5.js"></script>
+<script type="text/javascript" src="js/js.cookie.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script type="text/javascript" src="js/verify.js"></script>
+<script th:inline="none">
+    layui.use(['jquery', 'form', 'layer'], function () {
+        var form = layui.form
+            , layer = layui.layer
+
+
+        //自定义验证规则
+        form.verify({
+            title: function (value) {
+                if (value.length < 1 || value == "") {
+                    return '请输入用户名';
+                }
+            }
+            , password: function (value) {
+                if (value.length < 1 || value == "") {
+                    return '请输入密码，且不能出现空格';
+                }
+            }
+            , phone: function (value) {
+                if (value.length < 1 || value == "") {
+                    return '请输入手机号';
+                }
+            }
+            , code: function (value) {
+                if (value.length < 1 || value == "") {
+                    return '请输入验证码';
+                }
+            }
+        });
+
+        var $ = layui.jquery;
+
+        //忘记密码
+        $('#forget').on("click", function () {
+            window.location.href = "forget";
+        });
+        //手机验证
+        $('#sendBtn').on("click", function () {
+            var phone = $("#phone").val();
+            if (phone == '' || phone.length != 11) {
+                layer.msg("请输入正确的手机号！");
+                return;
+            } else {
+                $.ajax({
+                    type: 'GET',
+                    url: 'sendCode',
+                    data: {
+                        phone: phone
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data) {
+                            timer();
+                        } else {
+                            layer.msg("获取验证码失败");
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg('连接超时！');
+                    },
+                });
+            }
+        });
+
+        var wait = 60;
+
+        //倒计时
+        function timer() {
+            if (wait == 0) {
+                $("#sendBtn").val("获取验证码");
+                $("#sendBtn").removeAttr("disabled");
+                $("#sendBtn").css("border-color", "1e9fff").css("background", "#ffffff").css("cursor", "pointer");
+                wait = 60;
+            } else {
+                $("#sendBtn").attr("disabled", "true");
+                $("#sendBtn").css("border-color", "fbfbfb").css("background", "#ccc").css("cursor", "not-allowed");
+                $("#sendBtn").val(wait + "秒后重发");
+                wait--;
+                setTimeout(function () {
+                    timer()
+                }, 1000);
+            }
+        }
+
+        var flag = 0;
+        $('#mpanel5').pointsVerify({
+            defaultNum: 4,	//默认的文字数量
+            checkNum: 2,	//校对的文字数量
+            vSpace: 3,	//间隔
+            imgName: ['3.jpg', '2.jpg'],
+            imgSize: {
+                width: '300px',
+                height: '150px',
+            },
+            barSize: {
+                width: '300px',
+                height: '20px',
+            },
+            ready: function () {
+            },
+            success: function () {
+                flag = 1;
+            },
+            error: function () {
+                layer.msg('验证失败', {icon: 2});
+            }
+
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            var username = $("#username").val();
+            var password = $.md5($("#password").val());
+            var phone = $("#phone").val();
+            var code = $("#code").val();
+            if (flag == 1) {
+                $.ajax({
+                    url: 'userLogin',
+                    type: 'post',
+                    data: {
+                        username: username,
+                        password: password,
+                        phone: phone,
+                        code: code,
+                    },
+                    cache: false,
+                    async: true,
+                    beforeSend: function () {
+                        layer.msg("正在登录", {
+                            icon: 16,
+                            shade: 0.5,//遮罩的颜色与透明度
+                            time: false  //取消自动关闭
+                        });
+                    },
+                    success: function (response) {
+                        layer.closeAll();
+                        if (response == "-2") {
+                            layer.msg('用户名或密码错误', {icon: 2});
+                        } else if (response == "0") {
+                            layer.msg('请勿重复登录', {icon: 2});
+                        } else if (response == "-1") {
+                            layer.msg('手机验证码错误', {icon: 2});
+                        } else if (response == "-3") {
+                            layer.msg('手机号码不匹配', {icon: 2});
+                        } else {
+                            Cookies.set('myToken', response);
+                            layer.msg('登录成功', {icon: 1});
+                            window.location.href = "manage";
+                        }
+                    },
+                    error: function () {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+            } else {
+                layer.msg('请先进行验证', {icon: 2});
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

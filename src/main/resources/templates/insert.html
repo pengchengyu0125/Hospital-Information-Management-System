@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>新增</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <style type="text/css">
+        .file {
+            position: relative;
+            display: inline-block;
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+            left: 8%;
+        }
+
+        .file input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .file:hover {
+            background: #AADFFD;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <input type="hidden" id="uploadUrl" th:value="${uploadUrl}">
+        <form class="layui-form" style="margin-top: 3%">
+            <input type="hidden" value="" id="className">
+            <input type="hidden" value="" name="iconUrl" id="iconUrl">
+            <div class="layui-form-item">
+                <label class="layui-form-label">医生ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="doctorCode" required lay-verify="required" placeholder="请输入医生ID"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">医生姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="doctorName" required lay-verify="required" placeholder="请输入医生姓名"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <a href="javascript:;" class="file">上传医生头像
+                    <input type="file" name="file" id="insertIcon" accept="image/*">
+                </a>
+            </div>
+            <img class="layui-upload-img"
+                 id="imageView"
+                 style="height: 100px;position: relative;left: 8%;bottom: 10px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">科室</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="tree" name="deptCode" lay-verify="required|valiCode" onlay-filter="tree"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">职称</label>
+                <div class="layui-input-inline">
+                    <select name="titleCode" lay-search>
+                        <option value="0">无</option>
+                        <option value="1">副主任医师</option>
+                        <option value="2">医师</option>
+                        <option value="3">主管技师</option>
+                        <option value="4">主任护师</option>
+                        <option value="5">主任医师</option>
+                        <option value="6">主治医师</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">专家</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="jobCode" value="0" title="否" checked>
+                    <input type="radio" name="jobCode" value="1" title="是">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">专长</label>
+                <div class="layui-input-block">
+                    <textarea name="major" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">简介</label>
+                <div class="layui-input-block">
+                    <textarea name="introduce" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="js/layer/layer.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+    <script>
+        layui.use(["jquery", "upload", "form", "layer", "element"], function () {
+            var $ = layui.$,
+                element = layui.element,
+                layer = layui.layer,
+                upload = layui.upload,
+                form = layui.form;
+
+            //验证
+            form.verify({
+                valiCode: function (value) {
+                    if (value.search("Root") != -1) {
+                        return "请选择" + $(" input[ id='className' ] ").val() + "下的正确科室!";
+                    }
+                }
+            });
+
+            $('#insertIcon').on("change", function (file) {
+                var formData = new FormData();
+                var file = $('#insertIcon').prop('files')[0];
+                if (file['name'].split('.')[0] == $(" input[ name='doctorCode' ] ").val()){
+                    formData.append("file", file);
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function (even) {
+                        $('#imageView').attr("src", even.currentTarget.result);
+                    }
+                    $.ajax({
+                        url: $("#uploadUrl").val(),
+                        type: 'post',
+                        dataType: 'JSON',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        async: true,
+                        success: function (result) {
+                            $(" input[ name='iconUrl' ] ").val(result['data'][0]['savePath']);
+                        },
+                        error: function () {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                }
+                else {
+                    layer.msg('图片名与医生编码不一致', {icon: 2});
+                }
+            });
+
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                $.ajax({
+                    url: 'insertDoctor',
+                    type: 'post',
+                    dataType: 'text',
+                    data: JSON.stringify(data.field),
+                    contentType: 'application/json;charset=utf-8',
+                    cache: false,
+                    async: true,
+                    success: function (result) {
+                        if (result == "增加成功") {
+                            layer.msg(result, {icon: 1});
+                        } else {
+                            layer.msg(result, {icon: 2});
+                        }
+                        return false;
+                    },
+                    error: function (result) {
+                        layer.msg('失败', {icon: 2});
+                        return false;
+                    }
+                });
+                return false;
+            });
+        });
+
+
+        layui.config({
+            base: 'layui/' // js地址
+        }).extend({
+            treeSelect: 'treeSelect'
+        });
+
+        layui.use(['treeSelect', 'form'], function () {
+            var treeSelect = layui.treeSelect;
+            treeSelect.render({
+                // 选择器
+                elem: '#tree',
+                // 数据
+                data: 'deptInfo',
+                // 异步加载方式：get/post，默认get
+                type: 'get',
+                // 占位符
+                placeholder: '请选择科室',
+                // 是否开启搜索功能：true/false，默认false
+                search: true,
+                style: {
+                    folder:
+                        { // 父节点图标
+                            enable: false // 是否开启：true/false
+                        },
+                    line:
+                        { // 连接线
+                            enable: false // 是否开启：true/false
+                        }
+                },
+                // 点击回调
+                click: function (d) {
+                    var code = $(" input[ name='deptCode' ] ").val();
+                    for (var i = 0; i < d['data'].length; i++) {
+                        if (d['data'][i]['id'] == code) {
+                            layer.msg('请选择' + d['data'][i]['name'] + '下的科室', {icon: 2});
+                            $('#className').attr('value', d['data'][i]['name']);
+                        }
+                    }
+
+                },
+                // 加载完成后的回调函数
+                success: function (d) {
+                    //选中节点，根据id筛选
+                    //treeSelect.checkNode('tree', 3);
+                    //获取zTree对象，可以调用zTree方法
+                    //var treeObj = treeSelect.zTree('tree');
+                    //刷新树结构
+                    //treeSelect.refresh();
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

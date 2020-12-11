@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>管理</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <button type="button" class="layui-btn" id="insertFunction">新增功能导航</button>
+        <table class="layui-table" id="function" lay-filter="demo" style="margin-top: -10px"></table>
+        <form class="layui-form" id="form" lay-filter="form" style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="functionId" id="functionId">
+            <input type="hidden" name="originName" id="originName">
+            <input type="hidden" name="originUrl" id="originUrl">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">功能名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="functionName" placeholder="请输入功能名称" autocomplete="off" class="layui-input"
+                           id="functionName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">功能链接地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="functionUrl" placeholder="请输入功能链接地址" autocomplete="off" class="layui-input"
+                           id="functionUrl" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">使用者权限</label>
+                <div class="layui-input-inline" style="width: 120px">
+                    <select name="access" id="access" lay-verify="">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属父级功能</label>
+                <div class="layui-input-inline" style="width: 120px">
+                    <select name="belong" id="belong" lay-verify="">
+                        <option value="">请选择</option>
+                        <option th:each="function : ${functions}" th:value="${function.getFunctionId()}"
+                                th:text="${function.getFunctionName()}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">使用医院ID</label>
+                <div class="layui-input-inline">
+                    <div class="layui-input-inline" style="width: 120px" id="tag_ids2"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">验证码</label>
+                <div class="layui-input-inline" style="width: fit-content;">
+                    <input type="text" name="code" placeholder="请输入验证码" autocomplete="off" class="layui-input"
+                           id="code1" style="float: left;width: 120px;">
+                    <button type="button" class="layui-btn" id="sendBtn1" style="float: right">获取</button>
+                </div>
+            </div>
+        </form>
+        <form class="layui-form" id="insert" lay-filter="insertForm" style="display: none;width: 90%;margin-top: 20px">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">功能名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="functionName" placeholder="请输入功能名称" autocomplete="off" class="layui-input"
+                           id="insertFunctionName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">功能链接地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="functionUrl" placeholder="请输入功能链接地址" autocomplete="off" class="layui-input"
+                           id="insertFunctionUrl" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">使用者权限</label>
+                <div class="layui-input-inline" style="width: 120px">
+                    <select name="access" lay-verify="">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属父级功能</label>
+                <div class="layui-input-inline" style="width: 120px">
+                    <select name="belong" lay-verify="">
+                        <option value="">请选择</option>
+                        <option th:each="function : ${functions}" th:value="${function.getFunctionId()}"
+                                th:text="${function.getFunctionName()}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">使用医院</label>
+                <div class="layui-input-inline">
+                    <div class="layui-input-inline" style="width: 120px" id="hospital" name="name"></div>
+                </div>
+            </div>
+        </form>
+        <form class="layui-form" id="delete" lay-filter="delete" style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="functionId">
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline" style="width: fit-content;">
+                    <input type="text" name="code" placeholder="请输入验证码" autocomplete="off" class="layui-input"
+                           id="code" style="float: left;width: 120px;">
+                    <button type="button" class="layui-btn" id="sendBtn" style="float: right">获取</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+</div>
+
+<script type="text/html" id="barDemo" th:inline="none">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script th:inline="none">
+
+    layui.config({
+        base: 'layui/' // js地址
+    }).extend({
+        selectN: 'selectN',
+        selectM: 'selectM',
+    });
+
+    layui.use(['element', 'table', 'form', 'upload', 'selectM'], function () {
+        var element = layui.element
+            , table = layui.table
+            , form = layui.form
+            , selectM = layui.selectM;
+
+        var pathname = window.location.pathname.split('/')[1];
+        $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
+
+        $('#sendBtn').on("click", function () {
+            $.ajax({
+                type: 'GET',
+                url: 'verify',
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        timer();
+                    } else {
+                        layer.msg("获取验证码失败");
+                    }
+                },
+                error: function (data) {
+                    layer.msg('连接超时！');
+                },
+            });
+        });
+
+        var wait = 60;
+
+        //倒计时
+        function timer() {
+            if (wait == 0) {
+                $("#sendBtn").text("获取");
+                $("#sendBtn").removeAttr("disabled");
+                wait = 60;
+            } else {
+                $("#sendBtn").attr("disabled", "true");
+                $("#sendBtn").text(wait + "秒后重发");
+                wait--;
+                setTimeout(function () {
+                    timer()
+                }, 1000);
+            }
+        }
+
+        $('#sendBtn1').on("click", function () {
+            $.ajax({
+                type: 'GET',
+                url: 'verify',
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        timer1();
+                    } else {
+                        layer.msg("获取验证码失败");
+                    }
+                },
+                error: function (data) {
+                    layer.msg('连接超时！');
+                },
+            });
+        });
+
+        var wait1 = 60;
+
+        //倒计时
+        function timer1() {
+            if (wait1 == 0) {
+                $("#sendBtn1").text("获取");
+                $("#sendBtn1").removeAttr("disabled");
+                wait1 = 60;
+            } else {
+                $("#sendBtn1").attr("disabled", "true");
+                $("#sendBtn1").text(wait1 + "秒后重发");
+                wait1--;
+                setTimeout(function () {
+                    timer1()
+                }, 1000);
+            }
+        }
+
+        var tagData;
+        $.ajax({
+            url: 'hospital',
+            type: 'get',
+            cache: false,
+            async: false,
+            success: function (result) {
+                tagData = result;
+            },
+            error: function (result) {
+                layer.msg('失败', {icon: 2});
+            }
+        });
+        var hospital = selectM({
+            //元素容器【必填】
+            elem: '#hospital'
+            //候选数据【必填】
+            , data: tagData
+            , tips: '请选择医院'
+            , max: 99
+            , width: 280
+            //添加验证
+            , verify: 'required'
+        });
+        //表格数据
+        var tableData = new Array();
+        $.ajax({
+            url: 'functionTable',
+            type: 'get',
+            cache: false,
+            async: false,
+            success: function (result) {
+                tableData = result['data'];
+            },
+            error: function (result) {
+                layer.msg('失败', {icon: 2});
+            }
+        });
+        table.render({
+            elem: '#function'
+            , cellMinWidth: 100
+            , page: true
+            , cols: [[
+                {field: 'functionId', align: 'center', width: '10%', title: '功能ID'}
+                , {field: 'functionName', align: 'center', width: '15%', title: '功能名称'}
+                , {field: 'functionUrl', align: 'center', width: '20%', title: '功能链接地址'}
+                , {field: 'access', align: 'center', width: '10%', title: '使用者权限'}
+                , {field: 'belong', align: 'center', width: '15%', title: '所属父级功能ID'}
+                , {field: 'hospital', align: 'center', width: '20%', title: '使用医院ID'}
+                , {title: '操作', toolbar: '#barDemo', width: '10%', align: 'center'}
+            ]]
+            , data: tableData
+            , id: 'reload'
+        });
+
+        //新增功能导航
+        $('#insertFunction').on("click", function () {
+            layer.open({
+                type: 1,
+                area: ['450px', '500px'],
+                title: '新增'
+                , content: $("#insert")
+                , shade: 0.5
+                , btn: ['提交', '重置']
+                , success: function (layero) {
+                    var mask = $(".layui-layer-shade");
+                    mask.appendTo(layero.parent());
+                }
+                , btn1: function (index, layero) {
+                    console.log($("#hospital"));
+                    if ($("#insertFunctionName").val() == "") {
+                        layer.msg('功能名不能为空', {icon: 2});
+                    } else if (hospital.values == "") {
+                        layer.msg('使用医院不能为空', {icon: 2});
+                    } else {
+                        var o = {};
+                        var a = $('#insert').serializeArray();
+                        a[4]['value'] = hospital.values;
+                        $.each(a, function () {
+                            if (o[this.name] !== undefined) {
+                                if (!o[this.name].push) {
+                                    o[this.name] = [o[this.name]];
+                                }
+                                o[this.name].push(this.value || '');
+                            } else {
+                                o[this.name] = this.value || '';
+                            }
+                        });
+                        $.ajax({
+                            url: 'insertFunction',
+                            type: 'post',
+                            dataType: 'text',
+                            data: JSON.stringify(o),
+                            contentType: 'application/json;charset=utf-8',
+                            cache: false,
+                            async: true,
+                            success: function (result) {
+                                if (result == '-1') {
+                                    layer.msg('相同功能无法增加', {icon: 2});
+                                } else if (result == '1') {
+                                    layer.msg('增加完成', {icon: 1});
+                                    window.location.reload();
+                                }
+                            },
+                            error: function () {
+                                layer.msg('失败', {icon: 2});
+                            }
+                        });
+                    }
+                },
+                btn2: function (index, layero) {
+                    $("#insertFunctionName").val("");
+                    $("#insertFunctionUrl").val("");
+                    return false
+                },
+                cancel: function (layero, index) {
+                    layer.closeAll();
+                }
+
+            });
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            //删除
+            if (obj.event === 'del') {
+                form.val("delete", data);
+                layer.open({
+                    type: 1,
+                    area: ['400px', '300px'],
+                    title: '删除'
+                    , content: $("#delete")
+                    , shade: 0.5
+                    , btn: ['删除']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                    }
+                    , btn1: function (index, layero) {
+                        if ($("#code").val() == "") {
+                            layer.msg('请填写验证码', {icon: 2});
+                        } else {
+                            $.ajax({
+                                url: 'deleteFunction',
+                                type: 'post',
+                                dataType: 'text',
+                                data: {
+                                    functionId: data.functionId,
+                                    code: $("#code").val()
+                                },
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == "1") {
+                                        layer.msg('删除完成', {icon: 1});
+                                        window.location.reload();
+                                    } else if (result == '-1') {
+                                        layer.msg('验证码错误', {icon: 2});
+                                    } else layer.msg('删除失败', {icon: 2});
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+            //编辑
+            else if (obj.event === 'edit') {
+                form.val("form", data);
+                $('#originName').val(data.functionName);
+                $('#originUrl').val(data.functionUrl);
+                var tagIns1 = selectM({
+                    //元素容器【必填】
+                    elem: '#tag_ids2'
+                    //候选数据【必填】
+                    , data: tagData
+                    , tips: '请选择医院'
+                    , selected: data.hospital
+                    , max: 99
+                    , width: 280
+                    //添加验证
+                    , verify: 'required'
+                });
+                layer.open({
+                    type: 1,
+                    area: ['450px', '500px'],
+                    title: '编辑'
+                    , content: $("#form")
+                    , shade: 0.5
+                    , btn: ['提交', '重置']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                    }
+                    , btn1: function (index, layero) {
+                        if ($("#functionName").val() == "") {
+                            layer.msg('功能名不能为空', {icon: 2});
+                        } else if (tagIns1.values == "") {
+                            layer.msg('使用医院不能为空', {icon: 2});
+                        } else if ($("#code1").val() == "") {
+                            layer.msg('请填写验证码', {icon: 2});
+                        } else {
+                            var o = {};
+                            var a = $('#form').serializeArray();
+                            a[7]['name'] = 'hospital';
+                            a[7]['value'] = tagIns1.values;
+                            $.each(a, function () {
+                                if (o[this.name] !== undefined) {
+                                    if (!o[this.name].push) {
+                                        o[this.name] = [o[this.name]];
+                                    }
+                                    o[this.name].push(this.value || '');
+                                } else {
+                                    o[this.name] = this.value || '';
+                                }
+                            });
+                            $.ajax({
+                                url: 'editFunction',
+                                type: 'post',
+                                dataType: 'text',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json;charset=utf-8',
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == "1") {
+                                        layer.closeAll();
+                                        layer.msg('编辑完成', {icon: 1});
+                                        window.location.reload();
+                                    } else if (result == "-1") {
+                                        layer.msg('功能重复', {icon: 2});
+                                    } else if (result == "-2") {
+                                        layer.msg('验证码错误', {icon: 2});
+                                    } else {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    btn2: function (index, layero) {
+                        $("#functionName").val("");
+                        $("#functionUrl").val("");
+                        return false
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="nav">
+    <div class="layui-header" style="z-index: auto;">
+        <ul class="layui-nav">
+            <li class="layui-nav-item">
+                <a href="javascript:;" th:text="${session.user.getHospitalName()}" style="font-size: 20px;color: #FFFFFF"></a>
+                <dl class="layui-nav-child" th:if="${session.user.getAccess() == '1'}">
+                    <dd>
+                        <a th:href="'manage?hospitalCode='+${hospital.getHospitalCode()}+'&hospitalName='+${hospital.getHospitalName()}"
+                           th:each="hospital : ${session.hospitals}" th:text="${hospital.getHospitalName()}"></a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <img th:if="${session.user.getAccess() != '1'}" th:src="${session.user.getIconUrl()}" class="layui-nav-img">
+            <img th:if="${session.user.getAccess() == '1'}" src="images/super.jpg" class="layui-nav-img">
+            <li class="layui-nav-item" th:text="'用户名：'+${session.user.getUserName()}"></li>
+            <li class="layui-nav-item"><a href="logout">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black" style="z-index: auto;">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+
+                <div th:if="${session.user.getAccess() == '1'}">
+                    <li class="layui-nav-item" th:each="function:${session.functionList}">
+                        <a th:if="${function.getFunctionUrl()==null || function.getFunctionUrl()==''}" href="javascript:;" th:text="${function.getFunctionName()}"></a>
+                        <dl th:if="${function.getFunctionUrl()==null || function.getFunctionUrl()==''}" class="layui-nav-child">
+                            <a th:each="child:${session.functionList}" th:if="${child.getBelong()==function.getFunctionId()}" th:href="${child.getFunctionUrl()}" th:text="${child.getFunctionName()}"></a>
+                        </dl>
+                        <a th:if="${function.getFunctionUrl()!=null && function.getFunctionUrl()!='' && function.getBelong()==null}" th:href="${function.getFunctionUrl()}" th:text="${function.getFunctionName()}"></a>
+                    </li>
+                </div>
+                <div th:if="${session.user.getAccess() == '0'}">
+                    <li class="layui-nav-item" th:each="function:${session.functionList}">
+                        <a th:if="${(function.getFunctionUrl()==null || function.getFunctionUrl()=='') && function.getAccess()=='0'}" class="" href="javascript:;" th:text="${function.getFunctionName()}"></a>
+                        <dl th:if="${(function.getFunctionUrl()==null || function.getFunctionUrl()=='') && function.getAccess()=='0'}" class="layui-nav-child">
+                            <a th:each="child:${session.functionList}" th:if="${child.getBelong()==function.getFunctionId() && child.getAccess()=='0'}" th:href="${child.getFunctionUrl()}" th:text="${child.getFunctionName()}"></a>
+                        </dl>
+                        <a th:if="${function.getFunctionUrl()!=null && function.getFunctionUrl()!='' && function.getBelong()==null && function.getAccess()=='0'}" th:href="${function.getFunctionUrl()}" th:text="${function.getFunctionName()}"></a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

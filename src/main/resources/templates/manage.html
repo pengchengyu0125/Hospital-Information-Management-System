@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>管理</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <style type="text/css">
+        .file {
+            position: relative;
+            display: inline-block;
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+            left: 15%;
+        }
+
+        .file input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .file:hover {
+            background: #AADFFD;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <input type="hidden" id="uploadUrl" th:value="${uploadUrl}">
+        <form class="layui-form" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">医生编码</label>
+                    <div class="layui-input-inline" style="width: 130px;">
+                        <input type="text" name="searchDoctorCode" onkeyup="this.value=this.value.replace(/[, ]/g,'')" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">医生姓名</label>
+                    <div class="layui-input-inline" style="width: 130px;">
+                        <input type="text" name="searchDoctorName" onkeyup="this.value=this.value.replace(/[, ]/g,'')" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">医生职称</label>
+                    <div class="layui-input-inline" style="width: 130px;">
+                        <select name="searchTitleCode" id="searchTitleCode" lay-search="">
+                            <option value="">全部</option>
+                            <option th:each="titlelist: ${titleLists}" th:value="${titlelistStat.index}"
+                                    th:text="${titlelist}"></option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">查询</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="insertBtn">新增</button>
+            </div>
+        </form>
+
+        <div class="layui-collapse" lay-accordion="">
+            <div class="layui-colla-item" th:each="deptClassList : ${deptClassLists}">
+                <h2 class="layui-colla-title" th:text="${deptClassList.deptClassName}"></h2>
+                <div class="layui-colla-content">
+                    <div class="layui-collapse" lay-accordion>
+                        <div class="layui-colla-item" th:each="deptList : ${deptLists}"
+                             th:if="${deptList.deptClassType==deptClassList.deptClassCode}">
+                            <h2 th:text="${deptList.deptName}" class="layui-colla-title"
+                                th:name="${deptList.deptCode}"></h2>
+                            <div class="layui-colla-content" th:name="${deptList.deptCode}"
+                                 th:id="'zhankai'+${deptList.deptCode}">
+                                <table class="layui-table" th:id="${deptList.deptCode}" lay-filter="demo"
+                                       style="margin-top: -10px"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form class="layui-form" th:id="'form'+${doctorDTO.doctorCode+doctorDTO.deptCode}"
+              lay-filter="doctorForm" style="display: none;width: 90%"
+              th:each="doctorDTO : ${doctorDTOS}">
+            <input type="hidden" name="deptName"
+                   th:id="'deptname'+${doctorDTO.doctorCode+doctorDTO.deptCode}">
+            <input type="hidden" name="doctorCode" id="doctorCode">
+            <input type="hidden" name="iconUrl" id="iconUrl">
+            <input type="hidden" value="" th:id="'className'+${doctorDTO.doctorCode+doctorDTO.deptCode}">
+            <input type="hidden" value="" name="originDept">
+            <input type="hidden" name="sort">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="doctorName" placeholder="请输入姓名" autocomplete="off"
+                           class="layui-input" id="doctorName" style="width:100px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <a href="javascript:;" class="file">选择图片
+                    <input type="file" name="file"
+                           th:id="'up'+${doctorDTO.doctorCode+doctorDTO.deptCode}"
+                           accept="image/*">
+                </a>
+            </div>
+            <img class="layui-upload-img"
+                 th:id="'imageView'+${doctorDTO.doctorCode+doctorDTO.deptCode}"
+                 style="height: 100px;position: relative;left: 15%;bottom: 10px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">科室</label>
+                <div class="layui-input-inline">
+                    <input type="text" th:id="'tree'+${doctorDTO.doctorCode+doctorDTO.deptCode}"
+                           name="deptCode" onlay-filter="tree" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">职称</label>
+                <div class="layui-input-block">
+                    <select name="titleCode" lay-search>
+                        <option th:each="titlelist: ${titleLists}"
+                                th:value="${titlelistStat.index}"
+                                th:text="${titlelist}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">专家</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="jobCode" value="0" title="否">
+                    <input type="radio" name="jobCode" value="1" title="是">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">专长</label>
+                <div class="layui-input-block">
+                    <textarea lay-verify="required" name="major" placeholder="请输入内容"
+                              class="layui-textarea" style="height: 150px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">简介</label>
+                <div class="layui-input-block">
+                    <textarea lay-verify="required" name="introduce" placeholder="请输入内容"
+                              class="layui-textarea" style="height: 150px;"></textarea>
+                </div>
+            </div>
+        </form>
+        <form class="layui-form" id="insert" style="display: none">
+            <input type="hidden" value="" id="className">
+            <input type="hidden" value="" name="iconUrl" id="insertIconUrl">
+            <div class="layui-form-item">
+                <label class="layui-form-label">医生编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="doctorCode" id="insertCode" required lay-verify="required" placeholder="请输入医生编码"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">医生姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="doctorName" id="insertName" required lay-verify="required" placeholder="请输入医生姓名"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <a href="javascript:;" class="file">上传医生头像
+                    <input type="file" name="file" id="insertIcon" accept="image/*">
+                </a>
+            </div>
+            <img class="layui-upload-img"
+                 id="imageView"
+                 style="height: 100px;position: relative;left: 8%;bottom: 10px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">科室</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="tree" name="deptCode" lay-verify="required|valiCode" onlay-filter="tree"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">职称</label>
+                <div class="layui-input-inline">
+                    <select name="titleCode" lay-search>
+                        <option th:each="titlelist: ${titleLists}"
+                                th:value="${titlelistStat.index}"
+                                th:text="${titlelist}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">专家</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="jobCode" value="0" title="否" checked>
+                    <input type="radio" name="jobCode" value="1" title="是">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">专长</label>
+                <div class="layui-input-block">
+                    <textarea name="major" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">简介</label>
+                <div class="layui-input-block">
+                    <textarea name="introduce" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+</div>
+<script th:inline="none" type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="up">上移</button>
+        <button class="layui-btn layui-btn-sm" lay-event="down">下移</button>
+        <button class="layui-btn layui-btn-sm" lay-event="update">更新排序</button>
+    </div>
+</script>
+<script th:inline="none" type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script th:inline="none">
+    //树状select
+    layui.config({
+        base: 'layui/' // js地址
+    }).extend({
+        treeSelect: 'treeSelect',
+    });
+
+    layui.use(['jquery', 'element', 'table', 'upload', 'form', 'treeSelect', 'layer'], function () {
+        var $ = layui.jquery
+            , element = layui.element
+            , layer = layui.layer
+            , table = layui.table
+            , form = layui.form
+            , upload = layui.upload
+            , treeSelect = layui.treeSelect;
+
+        var pathname = window.location.pathname.split('/')[1];
+        $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
+
+        //新增按钮点击事件
+        $('#insertBtn').on("click", function () {
+            $(".layui-treeSelect.layui-unselect.layui-form-select").remove();
+            treeSelect.render({
+                // 选择器
+                elem: '#tree',
+                // 数据
+                data: 'deptInfo',
+                // 异步加载方式：get/post，默认get
+                type: 'get',
+                // 占位符
+                placeholder: '请选择科室',
+                // 是否开启搜索功能：true/false，默认false
+                search: true,
+                style: {
+                    folder:
+                        { // 父节点图标
+                            enable: false // 是否开启：true/false
+                        },
+                    line:
+                        { // 连接线
+                            enable: false // 是否开启：true/false
+                        }
+                },
+                // 点击回调
+                click: function (d) {
+                    var code = $("#tree").val();
+                    for (var i = 0; i < d['data'].length; i++) {
+                        if (d['data'][i]['id'] == code) {
+                            layer.msg('请选择' + d['data'][i]['name'] + '下的科室', {icon: 2});
+                            $('#className').attr('value', d['data'][i]['name']);
+                        }
+                    }
+
+                },
+                // 加载完成后的回调函数
+                success: function (d) {
+                    //选中节点，根据id筛选
+                    //treeSelect.checkNode('tree', 3);
+                    //获取zTree对象，可以调用zTree方法
+                    //var treeObj = treeSelect.zTree('tree');
+                    //刷新树结构
+                    //treeSelect.refresh();
+                }
+            });
+            layer.open({
+                type: 1,
+                area: ['450px', '500px'],
+                title: '新增'
+                , content: $("#insert")
+                , shade: 0.5
+                , btn: ['提交']
+                , success: function (layero) {
+                    var mask = $(".layui-layer-shade");
+                    mask.appendTo(layero.parent());
+                }
+                , btn1: function (index, layero) {
+                    if ($("#insertCode").val() == ''){
+                        layer.msg('请填写医生编码', {icon: 2});
+                    } else if ($("#insertName").val() == ''){
+                        layer.msg('请填写医生姓名', {icon: 2});
+                    } else if ($("#tree").val() == ''){
+                        layer.msg('请选择科室', {icon: 2});
+                    } else if ($("#insertIconUrl").val() == ''){
+                        layer.msg('请上传医生头像', {icon: 2});
+                    } else{
+                        var o = {};
+                        var a = $('#insert').serializeArray();
+                        $.each(a, function () {
+                            if (o[this.name] !== undefined) {
+                                if (!o[this.name].push) {
+                                    o[this.name] = [o[this.name]];
+                                }
+                                o[this.name].push(this.value || '');
+                            } else {
+                                o[this.name] = this.value || '';
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'insertDoctor',
+                            type: 'post',
+                            dataType: 'text',
+                            data: JSON.stringify(o),
+                            contentType: 'application/json;charset=utf-8',
+                            cache: false,
+                            async: true,
+                            success: function (result) {
+                                if (result == "增加成功") {
+                                    layer.msg(result, {icon: 1});
+                                    window.location.reload();
+                                } else {
+                                    layer.msg(result, {icon: 2});
+                                }
+                                return false;
+                            },
+                            error: function (result) {
+                                layer.msg('失败', {icon: 2});
+                                return false;
+                            }
+                        });
+                    }
+                    return false;
+                },
+                cancel: function (layero, index) {
+                    layer.closeAll();
+                }
+
+            });
+        });
+
+        //新增医生上传头像
+        $('#insertIcon').on("change", function (file) {
+            var formData = new FormData();
+            var file = $('#insertIcon').prop('files')[0];
+            if (file['name'].split('.')[0] == $("#insertCode").val()){
+                formData.append("file", file);
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function (even) {
+                    $('#imageView').attr("src", even.currentTarget.result);
+                }
+                $.ajax({
+                    url: $("#uploadUrl").val(),
+                    type: 'post',
+                    dataType: 'JSON',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    async: true,
+                    success: function (result) {
+                        $("#insertIconUrl").val(result['data'][0]['savePath']);
+                    },
+                    error: function () {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+            }
+            else {
+                layer.msg('图片名与医生编码不一致', {icon: 2});
+            }
+        });
+
+        //职称
+        var titleList = new Array();
+        $("#searchTitleCode option").each(function (n) {
+            if (n != 0) {
+                titleList[n - 1] = $(this).text()
+            }
+        });
+
+        //表格数据
+        $(".layui-colla-title").on("click", function () {
+            var deptCode = $(this).attr("name")
+            if (deptCode != null) {
+                var tableData = new Array();
+                $.ajax({
+                    url: 'doctor?deptCode=' + deptCode,
+                    type: 'get',
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        tableData = result['data'];
+                    },
+                    error: function (result) {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+                table.render({
+                    elem: '#' + deptCode
+                    , initSort: {field: 'sort', type: 'asc'}
+                    , toolbar: '#toolbarDemo'
+                    , cellMinWidth: 80
+                    , page: false
+                    , limit: Number.MAX_VALUE
+                    , cols: [[
+                        {type: 'radio'}
+                        , {field: 'doctorCode', width: 100, title: '医生编码'}
+                        , {field: 'doctorName', width: 100, title: '姓名'}
+                        , {
+                            field: 'titleCode', width: 120, title: '职称'
+                            , templet: function (d) {
+                                for (var i = 0; i < titleList.length; i++) {
+                                    if (d.titleCode == i) {
+                                        return titleList[i];
+                                    }
+                                }
+                            }
+                        }
+                        , {
+                            field: 'jobCode', width: 80, title: '专家'
+                            , templet: function (d) {
+                                if (d.jobCode == '1') {
+                                    return '是'
+                                } else {
+                                    return '否'
+                                }
+                            }
+                        }
+                        , {field: 'major', width: 314, title: '专长'}
+                        , {field: 'introduce', width: 325, title: '简介'}
+                        , {field: 'deptCode', hide: true}
+                        , {field: 'deptName', hide: true}
+                        , {field: 'iconUrl', hide: true}
+                        , {field: 'sort', sort: true, hide: true}
+                        , {fixed: 'right', title: '操作', width: 160, align: 'center', toolbar: '#barDemo'}
+                    ]]
+                    , data: tableData
+                    , id: 'reload' + deptCode
+                });
+            }
+        });
+
+        function loading(msg) {
+            layer.msg(msg, {
+                icon: 16,
+                shade: [0.6, '#000005'],//遮罩的颜色与透明度
+                time: false  //取消自动关闭
+            })
+        };
+
+        //搜索表单监听
+        form.on('submit(search)', function (data) {
+            $(".layui-colla-content").attr('class', 'layui-colla-content');
+            if (data.field.searchDoctorCode == '' && data.field.searchDoctorName == '' && data.field.searchTitleCode == '') {
+                return false;
+            }
+            loading("查询中");
+            $.ajax({
+                url: 'search?doctorCode=' + data.field.searchDoctorCode + '&doctorName=' + data.field.searchDoctorName + '&titleCode=' + data.field.searchTitleCode,
+                type: 'get',
+                cache: false,
+                async: true,
+                success: function (result) {
+                    layer.closeAll();
+                    var resultl = result['data'].length;
+                    if (resultl == 0){
+                        layer.msg('无数据', {icon: 7});
+                    }
+                    for (var i = 0; i < resultl; i++) {
+                        $("#zhankai" + result['data'][i]['deptCode']).parent().parent().parent().attr('class', 'layui-colla-content layui-show');
+                        $("#zhankai" + result['data'][i]['deptCode']).attr('class', 'layui-colla-content layui-show');
+                        var tableData = new Array();
+                        var deptCode = result['data'][i]['deptCode'];
+                        if (i == 0) {
+                            $.ajax({
+                                url: 'reload?doctorCode=' + data.field.searchDoctorCode + '&doctorName=' + data.field.searchDoctorName + '&titleCode=' + data.field.searchTitleCode + '&deptCode=' + deptCode,
+                                type: 'get',
+                                cache: false,
+                                async: false,
+                                success: function (result) {
+                                    tableData = result['data'];
+                                },
+                                error: function (result) {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                            table.render({
+                                elem: '#' + deptCode
+                                , initSort: {field: 'sort', type: 'asc'}
+                                , toolbar: '#toolbarDemo'
+                                , cellMinWidth: 80
+                                , page: false
+                                , limit: Number.MAX_VALUE
+                                , cols: [[
+                                    {type: 'radio'}
+                                    , {field: 'doctorCode', width: 100, title: '医生编码'}
+                                    , {field: 'doctorName', width: 100, title: '姓名'}
+                                    , {
+                                        field: 'titleCode', width: 120, title: '职称'
+                                        , templet: function (d) {
+                                            for (var i = 0; i < titleList.length; i++) {
+                                                if (d.titleCode == i) {
+                                                    return titleList[i];
+                                                }
+                                            }
+                                        }
+                                    }
+                                    , {
+                                        field: 'jobCode', width: 80, title: '专家'
+                                        , templet: function (d) {
+                                            if (d.jobCode == '1') {
+                                                return '是'
+                                            } else {
+                                                return '否'
+                                            }
+                                        }
+                                    }
+                                    , {field: 'major', width: 314, title: '专长'}
+                                    , {field: 'introduce', width: 325, title: '简介'}
+                                    , {field: 'deptCode', hide: true}
+                                    , {field: 'deptName', hide: true}
+                                    , {field: 'iconUrl', hide: true}
+                                    , {field: 'sort', sort: true, hide: true}
+                                    , {fixed: 'right', width: 160, align: 'center', toolbar: '#barDemo'}
+                                ]]
+                                , data: tableData
+                                , id: 'reload' + deptCode
+                            });
+                        } else {
+                            if (deptCode != result['data'][i - 1]['deptCode']) {
+                                $.ajax({
+                                    url: 'reload?doctorCode=' + data.field.searchDoctorCode + '&doctorName=' + data.field.searchDoctorName + '&titleCode=' + data.field.searchTitleCode + '&deptCode=' + deptCode,
+                                    type: 'get',
+                                    cache: false,
+                                    async: false,
+                                    success: function (result) {
+                                        tableData = result['data'];
+                                    },
+                                    error: function (result) {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                });
+                                table.render({
+                                    elem: '#' + deptCode
+                                    , initSort: {field: 'sort', type: 'asc'}
+                                    , toolbar: '#toolbarDemo'
+                                    , cellMinWidth: 80
+                                    , page: false
+                                    , limit: Number.MAX_VALUE
+                                    , cols: [[
+                                        {type: 'radio'}
+                                        , {field: 'doctorCode', width: 100, title: '医生编码'}
+                                        , {field: 'doctorName', width: 100, title: '姓名'}
+                                        , {
+                                            field: 'titleCode', width: 120, title: '职称'
+                                            , templet: function (d) {
+                                                for (var i = 0; i < titleList.length; i++) {
+                                                    if (d.titleCode == i) {
+                                                        return titleList[i];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        , {
+                                            field: 'jobCode', width: 80, title: '专家'
+                                            , templet: function (d) {
+                                                if (d.jobCode == '1') {
+                                                    return '是'
+                                                } else {
+                                                    return '否'
+                                                }
+                                            }
+                                        }
+                                        , {field: 'major', width: 314, title: '专长'}
+                                        , {field: 'introduce', width: 325, title: '简介'}
+                                        , {field: 'deptCode', hide: true}
+                                        , {field: 'deptName', hide: true}
+                                        , {field: 'iconUrl', hide: true}
+                                        , {field: 'sort', sort: true, hide: true}
+                                        , {fixed: 'right', width: 160, align: 'center', toolbar: '#barDemo'}
+                                    ]]
+                                    , data: tableData
+                                    , id: 'reload' + deptCode
+                                });
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    layer.msg('失败', {icon: 2});
+                }
+            });
+            return false;
+        });
+
+        //头工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch (obj.event) {
+                case 'up':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptCode']];
+                    if (data[0]['sort'] == tableData[0]['sort']) {
+                        break;
+                    }
+                    var tableDatal = tableData.length;
+                    for (var i = 0; i < tableDatal; i++) {
+                        if (tableData[i]['doctorCode'] == data[0]['doctorCode']) {
+                            var temp = tableData[i]['sort'];
+                            tableData[i]['sort'] = tableData[i - 1]['sort'];
+                            tableData[i - 1]['sort'] = temp;
+                        }
+                    }
+                    table.render({
+                        elem: '#' + data[0]['deptCode']
+                        , initSort: {field: 'sort', type: 'asc'}
+                        , toolbar: '#toolbarDemo'
+                        , cellMinWidth: 80
+                        , page: false
+                        , limit: Number.MAX_VALUE
+                        , cols: [[
+                            {type: 'radio'}
+                            , {field: 'doctorCode', width: 100, title: '医生编码'}
+                            , {field: 'doctorName', width: 100, title: '姓名'}
+                            , {
+                                field: 'titleCode', width: 120, title: '职称'
+                                , templet: function (d) {
+                                    for (var i = 0; i < titleList.length; i++) {
+                                        if (d.titleCode == i) {
+                                            return titleList[i];
+                                        }
+                                    }
+                                }
+                            }
+                            , {
+                                field: 'jobCode', width: 80, title: '专家'
+                                , templet: function (d) {
+                                    if (d.jobCode == '1') {
+                                        return '是'
+                                    } else {
+                                        return '否'
+                                    }
+                                }
+                            }
+                            , {field: 'major', width: 314, title: '专长'}
+                            , {field: 'introduce', width: 325, title: '简介'}
+                            , {field: 'deptCode', hide: true}
+                            , {field: 'iconUrl', hide: true}
+                            , {field: 'sort', sort: true, hide: true}
+                            , {fixed: 'right', title: '操作', width: 160, align: 'center', toolbar: '#barDemo'}
+                        ]]
+                        , data: tableData
+                        , id: 'reload' + data[0]['deptCode']
+                    });
+                    break;
+                case 'down':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptCode']];
+                    var tableDatal = tableData.length;
+                    if (data[0]['sort'] == tableData[tableDatal - 1]['sort']) {
+                        break;
+                    }
+                    for (var i = 0; i < tableDatal; i++) {
+                        if (tableData[i]['doctorCode'] == data[0]['doctorCode']) {
+                            var temp = tableData[i]['sort'];
+                            tableData[i]['sort'] = tableData[i + 1]['sort'];
+                            tableData[i + 1]['sort'] = temp;
+                        }
+                    }
+                    table.render({
+                        elem: '#' + data[0]['deptCode']
+                        , initSort: {field: 'sort', type: 'asc'}
+                        , toolbar: '#toolbarDemo'
+                        , cellMinWidth: 80
+                        , page: false
+                        , limit: Number.MAX_VALUE
+                        , cols: [[
+                            {type: 'radio'}
+                            , {field: 'doctorCode', width: 100, title: '医生编码'}
+                            , {field: 'doctorName', width: 100, title: '姓名'}
+                            , {
+                                field: 'titleCode', width: 120, title: '职称'
+                                , templet: function (d) {
+                                    for (var i = 0; i < titleList.length; i++) {
+                                        if (d.titleCode == i) {
+                                            return titleList[i];
+                                        }
+                                    }
+                                }
+                            }
+                            , {
+                                field: 'jobCode', width: 80, title: '专家'
+                                , templet: function (d) {
+                                    if (d.jobCode == '1') {
+                                        return '是'
+                                    } else {
+                                        return '否'
+                                    }
+                                }
+                            }
+                            , {field: 'major', width: 314, title: '专长'}
+                            , {field: 'introduce', width: 325, title: '简介'}
+                            , {field: 'deptCode', hide: true}
+                            , {field: 'iconUrl', hide: true}
+                            , {field: 'sort', sort: true, hide: true}
+                            , {fixed: 'right', title: '操作', width: 160, align: 'center', toolbar: '#barDemo'}
+                        ]]
+                        , data: tableData
+                        , id: 'reload' + data[0]['deptCode']
+                    });
+                    break;
+                case 'update':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptCode']];
+                    $.ajax({
+                        url: 'updateSort',
+                        type: 'post',
+                        data: JSON.stringify(tableData),
+                        contentType: "application/json",
+                        cache: false,
+                        async: true,
+                        success: function (result) {
+                            layer.msg('成功', {icon: 1});
+                        },
+                        error: function (result) {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                    break;
+            }
+            ;
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+
+            //删除
+            if (obj.event === 'del') {
+                layer.confirm('确认删除数据吗?', function (index) {
+                    $.ajax({
+                        url: 'delete',
+                        type: 'post',
+                        dataType: 'text',
+                        data: {
+                            doctorCode: data.doctorCode,
+                            deptCode: data.deptCode
+                        },
+                        cache: false,
+                        async: true,
+                        success: function () {
+                            layer.msg('删除完成', {icon: 1});
+                            table.reload('reload' + data.deptCode, {
+                                url: 'doctor?deptCode=' + data.deptCode
+                            });
+                        },
+                        error: function () {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                });
+            } else if (obj.event === 'edit') { //编辑
+                $(".layui-treeSelect.layui-unselect.layui-form-select").remove();
+                form.val("doctorForm", data);
+                $('#imageView' + data.doctorCode + data.deptCode).attr('src', data.iconUrl);
+                $(" input[ name='originDept' ] ").val(data.deptCode);
+                var finish = 1;
+                parent.layer.open({
+                    type: 1,
+                    area: ['500px', '520px'],
+                    offset: 'auto',
+                    title: '编辑'
+                    , content: $("#form" + data.doctorCode + data.deptCode)
+                    , shade: 0.5
+                    , btn: ['提交', '重置']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                        $('#up' + data.doctorCode + data.deptCode).on("change", function (file) {
+                            finish = 0;
+                            var formData = new FormData();
+                            var file = $('#up' + data.doctorCode + data.deptCode).prop('files')[0];
+                            if (file['name'].split('.')[0] == data.doctorCode) {
+                                formData.append("file", file);
+                                var reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onloadend = function (even) {
+                                    $('#imageView' + data.doctorCode + data.deptCode).attr("src", even.currentTarget.result);
+                                }
+                                $.ajax({
+                                    url: $("#uploadUrl").val(),
+                                    type: 'post',
+                                    dataType: 'JSON',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    cache: false,
+                                    async: true,
+                                    success: function (result) {
+                                        $(" input[ name='iconUrl' ] ").val(result['data'][0]['savePath']);
+                                        finish = 1;
+                                    },
+                                    error: function () {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                });
+                            } else {
+                                layer.msg('图片名与医生编码不一致', {icon: 2});
+                            }
+                        });
+                    }
+                    , btn1: function (index, layero) {
+                        var className = $("#className" + data.doctorCode + data.deptCode).val();
+                        if ($("#tree" + data.doctorCode + data.deptCode).val().indexOf("Root") >= 0) {
+                            layer.msg('请选择' + className + '下的正确科室!', {icon: 2});
+                        } else if (finish == 0) {
+                            layer.msg('图片正在上传中请稍后', {icon: 7});
+                        } else {
+                            var o = {};
+                            var a = $('#form' + data.doctorCode + data.deptCode).serializeArray();
+
+                            $.each(a, function () {
+                                if (o[this.name] !== undefined) {
+                                    if (!o[this.name].push) {
+                                        o[this.name] = [o[this.name]];
+                                    }
+                                    o[this.name].push(this.value || '');
+                                } else {
+                                    o[this.name] = this.value || '';
+                                }
+                            });
+                            $.ajax({
+                                url: 'edit',
+                                type: 'post',
+                                dataType: 'text',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json;charset=utf-8',
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == '-1'){
+                                        layer.msg('医生重复', {icon: 2});
+                                    }
+                                    else if (result == '1'){
+                                        table.reload('reload' + data.deptCode, {
+                                            url: 'doctor?deptCode=' + data.deptCode
+                                        });
+                                        $('#form' + data.doctorCode + data.deptCode).attr('id', 'form' + data.doctorCode + o['deptCode']);
+                                        $('#deptname' + data.doctorCode + data.deptCode).attr('id', 'deptname' + data.doctorCode + o['deptCode']);
+                                        $('#up' + data.doctorCode + data.deptCode).attr('id', 'up' + data.doctorCode + o['deptCode']);
+                                        $('#imageView' + data.doctorCode + data.deptCode).attr('id', 'imageView' + data.doctorCode + o['deptCode']);
+                                        $('#tree' + data.doctorCode + data.deptCode).attr('id', 'tree' + data.doctorCode + o['deptCode']);
+                                        $('#className' + data.doctorCode + data.deptCode).attr('id', 'className' + data.doctorCode + o['deptCode']);
+                                        layer.closeAll();
+                                        layer.msg('编辑完成', {icon: 1});
+                                        $(".layui-treeSelect.layui-unselect.layui-form-select").remove();
+                                    }
+                                    else {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    btn2: function (index, layero) {
+                        $("input[ name='doctorName' ]").val("");
+                        $("textarea[ name='major' ]").val("");
+                        $("textarea[ name='introduce' ]").val("");
+                        return false
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+
+            treeSelect.render({
+                // 选择器
+                elem: '#tree' + data.doctorCode + data.deptCode,
+                // 数据
+                data: 'deptInfo',
+                // 异步加载方式：get/post，默认get
+                type: 'get',
+                // 占位符
+                placeholder: $("#deptname" + data.doctorCode + data.deptCode).val(),
+                // 是否开启搜索功能：true/false，默认false
+                search: true,
+                style: {
+                    folder:
+                        { // 父节点图标
+                            enable: false // 是否开启：true/false
+                        },
+                    line:
+                        { // 连接线
+                            enable: false // 是否开启：true/false
+                        }
+                },
+                // 点击回调
+                click: function (d) {
+                    var code = $("#tree" + data.doctorCode + data.deptCode).val();
+                    for (var i = 0; i < d['data'].length; i++) {
+                        if (d['data'][i]['id'] == code) {
+                            layer.msg('请选择' + d['data'][i]['name'] + '下的科室', {icon: 2});
+                            $('#className' + data.doctorCode + data.deptCode).attr('value', d['data'][i]['name']);
+                        }
+                    }
+                    /*                        console.log(data.doctorCode + data.deptCode);
+                                            console.log(d['current']['id']);
+                                            $("#tree" + data.doctorCode + data.deptCode).val(d['current']['id']);*/
+
+                },
+                // 加载完成后的回调函数
+                success: function (d) {
+                    //选中节点，根据id筛选
+                    //treeSelect.checkNode('tree', 3);
+                    //获取zTree对象，可以调用zTree方法
+                    //var treeObj = treeSelect.zTree('tree');
+                    //刷新树结构
+                    // treeSelect.refresh();
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

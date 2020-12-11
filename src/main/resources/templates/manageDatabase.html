@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>管理</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <style type="text/css">
+        .file {
+            position: relative;
+            display: inline-block;
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+            left: 12%;
+        }
+
+        .file input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .file:hover {
+            background: #AADFFD;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <button type="button" class="layui-btn" id="insertDatabase">新增数据库</button>
+        <table class="layui-table" id="database" lay-filter="demo" style="margin-top: -10px"></table>
+        <form class="layui-form" id="form" lay-filter="form" style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="originCode" id="originCode">
+            <input type="hidden" name="iconUrl" id="iconUrl">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">数据库链接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="url" placeholder="请输入数据库链接" autocomplete="off" class="layui-input"
+                           id="url" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">用户名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userName" placeholder="请输入用户名" autocomplete="off" class="layui-input"
+                           id="userName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">用户密码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input"
+                           id="password" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属医院编号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="hospitalCode" placeholder="请输入医院编号" autocomplete="off" class="layui-input"
+                           id="hospitalCode" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属医院名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="hospitalName" placeholder="请输入医院名" autocomplete="off" class="layui-input"
+                           id="hospitalName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">上传服务的路径</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uploadUrl" placeholder="请输入路径" autocomplete="off" class="layui-input"
+                           id="uploadUrl" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <a href="javascript:;" class="file">选择图片
+                    <input type="file" name="file" id="upEdit" accept="image/*">
+                </a>
+            </div>
+            <img class="layui-upload-img"
+                 id="imageViewEdit"
+                 style="height: 100px;position: relative;left: 12%;bottom: 10px;">
+        </form>
+        <form class="layui-form" id="insert" lay-filter="insertForm" style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="iconUrl" id="insertIcon">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">数据库链接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="url" id="insertUrl" placeholder="请输入数据库链接" autocomplete="off"
+                           class="layui-input"
+                           style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">用户名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userName" id="insertName" placeholder="请输入用户名" autocomplete="off"
+                           class="layui-input"
+                           style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">用户密码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="password" id="insertPassword" placeholder="请输入密码" autocomplete="off"
+                           class="layui-input"
+                           style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属医院编号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="hospitalCode" placeholder="请输入医院编号" autocomplete="off" class="layui-input"
+                           id="insertHospitalCode" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">所属医院名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="hospitalName" placeholder="请输入医院名" autocomplete="off" class="layui-input"
+                           id="insertHospitalName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">上传服务的路径</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uploadUrl" placeholder="请输入路径" autocomplete="off" class="layui-input"
+                           id="insertUploadUrl" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <a href="javascript:;" class="file">选择图片
+                    <input type="file" name="file" id="upInsert" accept="image/*">
+                </a>
+            </div>
+            <img class="layui-upload-img"
+                 id="imageViewInsert"
+                 style="height: 100px;position: relative;left: 12%;bottom: 10px;">
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+</div>
+
+<script type="text/html" id="barDemo" th:inline="none">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script th:inline="none">
+
+    layui.use(['element', 'table', 'form', 'upload'], function () {
+        var element = layui.element
+            , table = layui.table
+            , form = layui.form
+            , upload = layui.upload
+
+        var pathname = window.location.pathname.split('/')[1];
+        $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
+
+        //表格数据
+        var tableData = new Array();
+        $.ajax({
+            url: 'databaseTable',
+            type: 'get',
+            cache: false,
+            async: false,
+            success: function (result) {
+                tableData = result['data'];
+            },
+            error: function (result) {
+                layer.msg('失败', {icon: 2});
+            }
+        });
+        table.render({
+            elem: '#database'
+            , cellMinWidth: 100
+            , page: false
+            , cols: [[
+                {field: 'url', align: 'center', width: '20%', title: '数据库链接'}
+                , {field: 'userName', align: 'center', width: '15%', title: '用户名'}
+                , {field: 'password', align: 'center', width: '15%', title: '密码'}
+                , {field: 'hospitalName', align: 'center', width: '15%', title: '所属医院'}
+                , {field: 'hospitalCode', hide: true}
+                , {field: 'uploadUrl', align: 'center', width: '20%', title: '上传服务的路径'}
+                , {title: '操作', align: 'center', toolbar: '#barDemo', width: '15%'}
+            ]]
+            , data: tableData
+            , id: 'reload'
+        });
+
+        //新增数据库
+        $('#insertDatabase').on("click", function () {
+
+            layer.open({
+                type: 1,
+                area: ['400px', '550px'],
+                title: '新增'
+                , content: $("#insert")
+                , shade: 0.5
+                , btn: ['提交', '重置']
+                , success: function (layero) {
+                    var mask = $(".layui-layer-shade");
+                    mask.appendTo(layero.parent());
+                    $('#upInsert').on("change", function (file) {
+                        console.log($('#upInsert').prop('files'));
+
+                        var formData = new FormData();
+                        var file = $('#upInsert').prop('files')[0];
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onloadend = function (even) {
+                            $('#imageViewInsert').attr("src", even.currentTarget.result);
+                        }
+                        formData.append("file", file);
+                        $.ajax({
+                            url: 'uploadImg',
+                            type: 'post',
+                            dataType: 'JSON',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            cache: false,
+                            async: true,
+                            success: function (result) {
+                                $(" input[ name='iconUrl' ] ").val(result['src']);
+                            },
+                            error: function () {
+                                layer.msg('失败', {icon: 2});
+                            }
+                        });
+                    });
+                }
+                , btn1: function (index, layero) {
+                    if ($("#insertName").val() == "") {
+                        layer.msg('用户名不能为空', {icon: 2});
+                    } else if ($("#insertPassword").val() == "") {
+                        layer.msg('密码不能为空', {icon: 2});
+                    } else if ($("#insertUrl").val() == "") {
+                        layer.msg('数据库链接不能为空', {icon: 2});
+                    } else if ($("#insertHospitalCode").val() == "") {
+                        layer.msg('医院编号不能为空', {icon: 2});
+                    } else if ($("#insertHospitalName").val() == "") {
+                        layer.msg('医院名不能为空', {icon: 2});
+                    } else if ($("#insertIcon").val() == "") {
+                        layer.msg('请选择医院图标', {icon: 2});
+                    } else if ($("#insertUploadUrl").val() == "") {
+                        layer.msg('上传服务的路径不能为空', {icon: 2});
+                    } else {
+                        var o = {};
+                        var a = $('#insert').serializeArray();
+                        $.each(a, function () {
+                            if (o[this.name] !== undefined) {
+                                if (!o[this.name].push) {
+                                    o[this.name] = [o[this.name]];
+                                }
+                                o[this.name].push(this.value || '');
+                            } else {
+                                o[this.name] = this.value || '';
+                            }
+                        });
+                        $.ajax({
+                            url: 'insertDatabase',
+                            type: 'post',
+                            dataType: 'text',
+                            data: JSON.stringify(o),
+                            contentType: 'application/json;charset=utf-8',
+                            cache: false,
+                            async: true,
+                            success: function (result) {
+                                layer.closeAll();
+                                if (result == '0') {
+                                    layer.msg('相同数据库无法增加', {icon: 2});
+                                } else if (result == '1') {
+                                    layer.msg('增加完成', {icon: 1});
+                                }
+                            },
+                            error: function () {
+                                layer.msg('失败', {icon: 2});
+                            }
+                        });
+                    }
+                },
+                btn2: function (index, layero) {
+                    $(".layui-input").val("");
+                    return false
+                },
+                cancel: function (layero, index) {
+                    layer.closeAll();
+                }
+
+            });
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+
+            //删除
+            if (obj.event === 'del') {
+                layer.confirm('确认删除数据吗?', function (index) {
+                    $.ajax({
+                        url: 'deleteDatabase',
+                        type: 'post',
+                        dataType: 'text',
+                        data: {
+                            hospitalCode: data.hospitalCode
+                        },
+                        cache: false,
+                        async: true,
+                        success: function (result) {
+                            if (result == "true") {
+                                layer.msg('删除完成', {icon: 1});
+                                obj.del();
+                                layer.close(index);
+                            } else layer.msg('删除失败', {icon: 2});
+                        },
+                        error: function () {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                });
+            }
+            //编辑
+            else if (obj.event === 'edit') {
+                form.val("form", data);
+                $("#originCode").val(data.hospitalCode);
+                $('#imageViewEdit').attr('src', data.iconUrl);
+                layer.open({
+                    type: 1,
+                    area: ['400px', '550px'],
+                    title: '编辑'
+                    , content: $("#form")
+                    , shade: 0.5
+                    , btn: ['提交', '重置']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                        $('#upEdit').on("change", function (file) {
+                            console.log($('#upEdit').prop('files'));
+
+                            var formData = new FormData();
+                            var file = $('#upEdit').prop('files')[0];
+                            var reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onloadend = function (even) {
+                                $('#imageViewEdit').attr("src", even.currentTarget.result);
+                            }
+                            formData.append("file", file);
+                            $.ajax({
+                                url: 'uploadImg',
+                                type: 'post',
+                                dataType: 'JSON',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    $(" input[ name='iconUrl' ] ").val(result['src']);
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        });
+                    }
+                    , btn1: function (index, layero) {
+                        if ($("#userName").val() == "") {
+                            layer.msg('用户名不能为空', {icon: 2});
+                        } else if ($("#password").val() == "") {
+                            layer.msg('密码不能为空', {icon: 2});
+                        } else if ($("#url").val() == "") {
+                            layer.msg('数据库链接不能为空', {icon: 2});
+                        } else if ($("#hospitalCode").val() == "") {
+                            layer.msg('医院编号不能为空', {icon: 2});
+                        } else if ($("#hospitalName").val() == "") {
+                            layer.msg('医院名不能为空', {icon: 2});
+                        } else if ($("#iconUrl").val() == "") {
+                            layer.msg('请选择医院图标', {icon: 2});
+                        } else if ($("#uploadUrl").val() == "") {
+                            layer.msg('上传服务的路径不能为空', {icon: 2});
+                        } else {
+                            var o = {};
+                            var a = $('#form').serializeArray();
+                            $.each(a, function () {
+                                if (o[this.name] !== undefined) {
+                                    if (!o[this.name].push) {
+                                        o[this.name] = [o[this.name]];
+                                    }
+                                    o[this.name].push(this.value || '');
+                                } else {
+                                    o[this.name] = this.value || '';
+                                }
+                            });
+                            $.ajax({
+                                url: 'editDatabase',
+                                type: 'post',
+                                dataType: 'text',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json;charset=utf-8',
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == "1"){
+                                        layer.closeAll();
+                                        layer.msg('编辑完成', {icon: 1});
+                                        table.reload('reload', {
+                                            url: 'databaseTable'
+                                        });
+                                    }
+                                    else if (result == "-1"){
+                                        layer.msg('医院编码重复', {icon: 2});
+                                    }
+                                    else{
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    btn2: function (index, layero) {
+                        $("#userName").val("");
+                        $("#password").val("");
+                        $("#url").val("");
+                        $("#hospitalCode").val("");
+                        $("#hospitalName").val("");
+                        $("#iconUrl").val("");
+                        $("#uploadUrl").val("");
+                        return false
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>管理</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <style>
+        .layui-form-label {
+            float: left;
+            display: block;
+            padding: 9px 15px;
+            font-weight: 400;
+            line-height: 20px;
+            text-align: right;
+            width: 60px;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <form class="layui-form" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-inline" style="width: 150px">
+                        <input type="text" name="searchPhone" id="searchPhone" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户姓名</label>
+                    <div class="layui-input-inline" style="width: 150px">
+                        <input type="text" name="searchName" id="searchName" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室编码</label>
+                    <div class="layui-input-inline" style="width: 150px">
+                        <input type="text" name="searchDeptCode" id="searchDeptCode" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">医生</label>
+                </div>
+                <div class="layui-inline" style="width: 170px">
+                    <select name="isOnlineDoctor" id="isOnlineDoctor" lay-verify="">
+                        <option value="">请选择是否为医生</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item" style="left: 7%;position: relative;">
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">查询</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="layui-table" id="user" lay-filter="demo" style="margin-top: -10px"></table>
+        <div id="pagination"></div>
+        <input type="hidden" id="total">
+        <form class="layui-form" id="form" lay-filter="form" style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="username" id="username">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">用户姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uname" class="layui-input" disabled="disabled" style="width: 150px"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">手机号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="phone" class="layui-input" disabled="disabled" style="width: 150px"/>
+                </div>
+            </div>
+            <div class="layui-form-item" style="width: 260px;margin-left: 20px;">
+                <label class="layui-form-label" style="left: 20px">医生</label>
+                <div class="layui-input-block">
+                    <select name="isOnlineDoctor" id="onlineDoctor" lay-filter="doctorFilter">
+                        <option value="">请选择是否为医生</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item" id="hide" style="width: 260px;margin-left: 20px;">
+                <label class="layui-form-label" style="left: 20px">医生编码</label>
+                <div class="layui-input-block">
+                    <select name="doctorCode" id="doctorCode" lay-filter="codeFilter"></select>
+                </div>
+                <div id="deptRemove">
+                    <label class="layui-form-label" style="left: 20px;">科室编码</label>
+                    <div class="layui-input-block" style="margin-top: 20px">
+                        <select name="deptCode" id="deptCode"></select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" style="left: 110px">全科医生科室编码请输入admin</div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+</div>
+
+<script type="text/html" id="barDemo" th:inline="none">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script th:inline="none">
+
+    layui.use(['element', 'table', 'form', 'laypage'], function () {
+        var element = layui.element
+            , table = layui.table
+            , form = layui.form
+            , laypage = layui.laypage
+            , $ = layui.jquery
+
+        var pathname = window.location.pathname.split('/')[1];
+        $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
+
+        //表格数据
+        var tableData = new Array();
+        $.ajax({
+            url: 'internetUser',
+            type: 'post',
+            cache: false,
+            async: false,
+            success: function (result) {
+                tableData = result['data'];
+                $("#total").val(result['total']);
+            },
+            error: function (result) {
+                layer.msg('失败', {icon: 2});
+            }
+        });
+        table.render({
+            elem: '#user'
+            , limit: Number.MAX_VALUE
+            , cols: [[
+                {field: 'username', align: 'center', width: '20%', title: '用户名'}
+                , {field: 'password', hide: true}
+                , {field: 'idCard', align: 'center', width: '20%', title: '身份证号'}
+                , {field: 'uname', align: 'center', width: '15%', title: '姓名'}
+                , {field: 'doctorCode', align: 'center', width: '15%', title: '医生编码'}
+                , {field: 'deptCode', align: 'center', width: '15%', title: '科室编码'}
+                , {
+                    field: 'isOnlineDoctor', align: 'center', width: '5%', title: '医生'
+                    , templet: function (d) {
+                        if (d.isOnlineDoctor == '1') {
+                            return '是'
+                        } else {
+                            return '否'
+                        }
+                    }
+                }
+                , {title: '操作', align: 'center', toolbar: '#barDemo', width: '10%'}
+            ]]
+            , data: tableData
+            , id: 'reload'
+        });
+
+        var page, size;
+        laypage.render({
+            elem: 'pagination'
+            , count: $("#total").val()
+            , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+            , jump: function (obj) {
+                $.ajax({
+                    url: 'internetUser',
+                    type: 'post',
+                    data: {
+                        page: obj.curr,
+                        size: obj.limit
+                    },
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        tableData = result['data'];
+                        $("#total").val(result['total']);
+                        page = obj.curr;
+                        size = obj.limit;
+                    },
+                    error: function (result) {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+                table.render({
+                    elem: '#user'
+                    , cellMinWidth: 100
+                    , limit: Number.MAX_VALUE
+                    , cols: [[
+                        {field: 'username', align: 'center', width: '20%', title: '用户名'}
+                        , {field: 'password', hide: true}
+                        , {field: 'idCard', align: 'center', width: '20%', title: '身份证号'}
+                        , {field: 'uname', align: 'center', width: '15%', title: '姓名'}
+                        , {field: 'doctorCode', align: 'center', width: '15%', title: '医生编码'}
+                        , {field: 'deptCode', align: 'center', width: '15%', title: '科室编码'}
+                        , {
+                            field: 'isOnlineDoctor', align: 'center', width: '5%', title: '医生'
+                            , templet: function (d) {
+                                if (d.isOnlineDoctor == '1') {
+                                    return '是'
+                                } else {
+                                    return '否'
+                                }
+                            }
+                        }
+                        , {title: '操作', align: 'center', toolbar: '#barDemo', width: '10%'}
+                    ]]
+                    , data: tableData
+                    , id: 'reload'
+                });
+            }
+        });
+
+        //加载中
+        function loading(msg) {
+            layer.msg(msg, {
+                icon: 16,
+                shade: [0.6, '#000005'],//遮罩的颜色与透明度
+                time: false  //取消自动关闭
+            })
+        };
+
+        //模糊查询
+        form.on('submit(search)', function (data) {
+            loading("查询中");
+            $.ajax({
+                url: 'internetUser',
+                type: 'post',
+                data: {
+                    phone: data.field.searchPhone,
+                    name: data.field.searchName,
+                    deptCode: data.field.searchDeptCode,
+                    isOnlineDoctor: data.field.isOnlineDoctor
+                },
+                cache: false,
+                async: false,
+                success: function (result) {
+                    layer.closeAll();
+                    tableData = result['data'];
+                    $("#total").val(result['total']);
+                    laypage.render({
+                        elem: 'pagination'
+                        , count: result['total']
+                        , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+                        , jump: function (obj) {
+                            $.ajax({
+                                url: 'internetUser',
+                                type: 'post',
+                                data: {
+                                    page: obj.curr,
+                                    size: obj.limit,
+                                    phone: data.field.searchPhone,
+                                    name: data.field.searchName,
+                                    deptCode: data.field.searchDeptCode,
+                                    isOnlineDoctor: data.field.isOnlineDoctor
+                                },
+                                cache: false,
+                                async: false,
+                                success: function (result) {
+                                    tableData = result['data'];
+                                    $("#total").val(result['total']);
+                                    page = obj.curr;
+                                    size = obj.limit;
+                                },
+                                error: function (result) {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                            table.render({
+                                elem: '#user'
+                                , cellMinWidth: 100
+                                , limit: Number.MAX_VALUE
+                                , cols: [[
+                                    {field: 'username', align: 'center', width: '20%', title: '用户名'}
+                                    , {field: 'password', hide: true}
+                                    , {field: 'idCard', align: 'center', width: '20%', title: '身份证号'}
+                                    , {field: 'uname', align: 'center', width: '15%', title: '姓名'}
+                                    , {field: 'doctorCode', align: 'center', width: '15%', title: '医生编码'}
+                                    , {field: 'deptCode', align: 'center', width: '15%', title: '科室编码'}
+                                    , {
+                                        field: 'isOnlineDoctor', align: 'center', width: '5%', title: '医生'
+                                        , templet: function (d) {
+                                            if (d.isOnlineDoctor == '1') {
+                                                return '是'
+                                            } else {
+                                                return '否'
+                                            }
+                                        }
+                                    }
+                                    , {title: '操作', align: 'center', toolbar: '#barDemo', width: '10%'}
+                                ]]
+                                , data: tableData
+                                , id: 'reload'
+                            });
+                        }
+                    });
+                },
+                error: function (result) {
+                    layer.msg('失败', {icon: 2});
+                }
+            });
+            table.render({
+                elem: '#user'
+                , cellMinWidth: 100
+                , limit: Number.MAX_VALUE
+                , cols: [[
+                    {field: 'username', align: 'center', width: '20%', title: '用户名'}
+                    , {field: 'password', hide: true}
+                    , {field: 'idCard', align: 'center', width: '20%', title: '身份证号'}
+                    , {field: 'uname', align: 'center', width: '15%', title: '姓名'}
+                    , {field: 'doctorCode', align: 'center', width: '15%', title: '医生编码'}
+                    , {field: 'deptCode', align: 'center', width: '15%', title: '科室编码'}
+                    , {
+                        field: 'isOnlineDoctor', align: 'center', width: '5%', title: '医生'
+                        , templet: function (d) {
+                            if (d.isOnlineDoctor == '1') {
+                                return '是'
+                            } else {
+                                return '否'
+                            }
+                        }
+                    }
+                    , {title: '操作', align: 'center', toolbar: '#barDemo', width: '10%'}
+                ]]
+                , data: tableData
+                , id: 'reload'
+            });
+            return false;
+        });
+
+        var list;
+        layui.form.on('select(doctorFilter)', function (data) {
+            if (data.value == 0){
+                $('#doctorCode').empty();
+                $("#deptCode ").empty();
+                $('#hide').css({"display":"none"});
+            }
+            if (data.value == 1){
+                $('#hide').css({"display":""});
+                if (list.length < 1){
+                    $("#deptCode ").empty();
+                    $('#deptRemove').css({"display":"none"});
+                    layer.confirm('没有此医生信息</br>请先在医生表中添加医生信息', {icon: 2, title:'提示'}, function(index){
+                        layer.close(index);
+                    });
+                }
+                else {
+                    $('#deptRemove').css({"display":""});
+                }
+            }
+        });
+
+        layui.form.on('select(codeFilter)', function (data) {
+            $("#deptCode").find("option").remove();
+            if (data.value != "") {
+                $.ajax({
+                    url: 'getDeptCode?doctorCode='+data.value,
+                    type: 'get',
+                    dataType: 'text',
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        $('#deptCode').append(new Option(result));
+                        $('#deptCode').append(new Option('admin'));
+                    },
+                    error: function () {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+                layui.form.render("select");
+            }
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (data['isOnlineDoctor'] == 1){
+                $('#hide').css({"display":""});
+            }
+            else{
+                $('#hide').css({"display":"none"});
+            }
+            $("#doctorCode").find("option").remove();
+            $("#deptCode").find("option").remove();
+            $.ajax({
+                url: 'getDoctorCode?doctorName='+data["uname"],
+                type: 'get',
+                dataType: 'text',
+                cache: false,
+                async: false,
+                success: function (result) {
+                    list = eval("(" + result + ")");
+                    for (var i = 0; i < list.length; i++) {
+                        $('#doctorCode').append(new Option(list[i]));
+                    }
+                },
+                error: function () {
+                    layer.msg('失败', {icon: 2});
+                }
+            });
+            if (data['deptCode'] != null){
+                $('#deptCode').append(new Option(data['deptCode']));
+            }
+            $('#deptCode').append(new Option('admin'));
+
+            //编辑
+            if (obj.event === 'edit') {
+                form.val("form", data);
+                layer.open({
+                    type: 1,
+                    area: ['400px', '500px'],
+                    title: '编辑'
+                    , content: $("#form")
+                    , shade: 0.5
+                    , btn: ['提交', '重置']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                        if (data['isOnlineDoctor'] == 1){
+                            if (list.length < 1){
+                                $("#deptCode ").empty();
+                                $('#deptRemove').css({"display":"none"});
+                                layer.confirm('没有此医生信息</br>请先在医生表中添加医生信息', {icon: 2, title:'提示'}, function(index){
+                                    layer.close(index);
+                                });
+                            }
+                            else {
+                                $('#deptRemove').css({"display":""});
+                            }
+                        }
+                    }
+                    , btn1: function (index, layero) {
+                        if (($('#deptCode').val() == null || $('#doctorCode').val() == null) && $('#onlineDoctor').val() == 1)
+                        {
+                            layer.msg('请填写必填项', {icon: 2});
+                        }
+                        else{
+                            var o = {};
+                            var a = $('#form').serializeArray();
+                            $.each(a, function () {
+                                if (o[this.name] !== undefined) {
+                                    if (!o[this.name].push) {
+                                        o[this.name] = [o[this.name]];
+                                    }
+                                    o[this.name].push(this.value || '');
+                                } else {
+                                    o[this.name] = this.value || '';
+                                }
+                            });
+                            $.ajax({
+                                url: 'editInternetUser',
+                                type: 'post',
+                                dataType: 'text',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json;charset=utf-8',
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == "1") {
+                                        layer.closeAll();
+                                        layer.msg('编辑完成', {icon: 1});
+                                        $.ajax({
+                                            url: 'internetUser',
+                                            type: 'post',
+                                            data: {
+                                                page: page,
+                                                size: size,
+                                                phone: $("#searchPhone").val(),
+                                                name: $("#searchName").val(),
+                                                deptCode: $("#searchDeptCode").val(),
+                                                isOnlineDoctor: $("#isOnlineDoctor").val()
+                                            },
+                                            cache: false,
+                                            async: false,
+                                            success: function (result) {
+                                                layer.closeAll();
+                                                tableData = result['data'];
+                                                $("#total").val(result['total']);
+                                            },
+                                            error: function (result) {
+                                                layer.msg('失败', {icon: 2});
+                                            }
+                                        });
+                                        table.render({
+                                            elem: '#user'
+                                            , cellMinWidth: 100
+                                            , limit: Number.MAX_VALUE
+                                            , cols: [[
+                                                {field: 'username', align: 'center', width: '20%', title: '用户名'}
+                                                , {field: 'password', hide: true}
+                                                , {field: 'idCard', align: 'center', width: '20%', title: '身份证号'}
+                                                , {field: 'uname', align: 'center', width: '15%', title: '姓名'}
+                                                , {field: 'doctorCode', align: 'center', width: '15%', title: '医生编码'}
+                                                , {field: 'deptCode', align: 'center', width: '15%', title: '科室编码'}
+                                                , {
+                                                    field: 'isOnlineDoctor', align: 'center', width: '5%', title: '医生'
+                                                    , templet: function (d) {
+                                                        if (d.isOnlineDoctor == '1') {
+                                                            return '是'
+                                                        } else {
+                                                            return '否'
+                                                        }
+                                                    }
+                                                }
+                                                , {title: '操作', align: 'center', toolbar: '#barDemo', width: '10%'}
+                                            ]]
+                                            , data: tableData
+                                            , id: 'reload'
+                                        });
+                                    } else {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

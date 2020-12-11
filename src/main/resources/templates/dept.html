@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="text/html; charset=UTF-8">
+    <title>管理</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:insert="navigation :: nav"></div>
+
+    <div class="layui-body" style="z-index: auto">
+        <form class="layui-form" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="searchDeptCode" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="searchDeptName" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">查询</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="insertBtn">新增</button>
+            </div>
+        </form>
+
+        <div class="layui-collapse" lay-accordion="">
+            <div class="layui-colla-item" th:each="deptClassList : ${deptClassLists}">
+                <h2 class="layui-colla-title" th:text="${deptClassList.deptClassName}"
+                    th:name="${deptClassList.deptClassCode}"></h2>
+                <div class="layui-colla-content" th:id="'zhankai'+${deptClassList.deptClassCode}">
+                    <table class="layui-table" th:id="${deptClassList.deptClassCode}" lay-filter="demo"
+                           style="margin-top: -10px"></table>
+                </div>
+            </div>
+        </div>
+        <form class="layui-form" th:id="'form'+${deptClassList.deptClassCode}"
+              th:each="deptClassList : ${deptClassLists}" lay-filter="form"
+              style="display: none;width: 90%;margin-top: 20px">
+            <input type="hidden" name="originDept" id="originDept">
+            <input type="hidden" name="originClass" id="originClass">
+            <input type="hidden" name="originName" id="originName">
+            <input type="hidden" name="sort">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">科室编号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="deptCode" placeholder="请输入科室编号" autocomplete="off"
+                           class="layui-input" id="deptCode" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">科室名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="deptName" placeholder="请输入科室名" autocomplete="off"
+                           class="layui-input" id="deptName" style="width: 150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px">所属科室分类</label>
+                    <div class="layui-input-inline">
+                        <select name="deptClassType" lay-search="" style="width: 150px">
+                            <option th:each="deptClassList: ${deptClassLists}"
+                                    th:value="${deptClassList.getDeptClassCode()}"
+                                    th:text="${deptClassList.getDeptClassName()}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form class="layui-form" id="form" style="display: none">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">科室编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="deptCode" id="insertCode" required lay-verify="required" placeholder="请输入科室编号"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">科室名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="deptName" id="insertName" required lay-verify="required" placeholder="请输入科室名"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 100px">所属科室分类</label>
+                <div class="layui-input-inline">
+                    <select name="deptClassType" lay-search="">
+                        <option th:each="deptClassList: ${deptClassLists}"
+                                th:value="${deptClassList.getDeptClassCode()}"
+                                th:text="${deptClassList.getDeptClassName()}"></option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="footer :: foot"></div>
+</div>
+<script th:inline="none" type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="up">上移</button>
+        <button class="layui-btn layui-btn-sm" lay-event="down">下移</button>
+        <button class="layui-btn layui-btn-sm" lay-event="update">更新排序</button>
+    </div>
+</script>
+<script th:inline="none" type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="js/layer/layer.js"></script>
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<script th:inline="none">
+
+    layui.use(['element', 'table', 'form'], function () {
+        var element = layui.element
+            , table = layui.table
+            , form = layui.form
+
+        //获取页面链接
+        var pathname = window.location.pathname.split('/')[1];
+        //根据页面链接设置菜单展开
+        $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
+
+        //新增按钮点击事件
+        $('#insertBtn').on("click", function () {
+            layer.open({
+                type: 1,
+                area: ['400px', '450px'],
+                title: '新增'
+                , content: $("#form")
+                , shade: 0.5
+                , btn: ['提交']
+                , success: function (layero) {
+                    //设置遮罩
+                    var mask = $(".layui-layer-shade");
+                    mask.appendTo(layero.parent());
+                }
+                //提交按钮
+                , btn1: function (index, layero) {
+                    if ($("#insertCode").val() == ''){
+                        layer.msg('请填写科室编码', {icon: 2});
+                    } else if ($("#insertName").val() == ''){
+                        layer.msg('请填写科室名', {icon: 2});
+                    } else{
+                        //设置数据格式
+                        var o = {};
+                        var a = $('#form').serializeArray();
+                        $.each(a, function () {
+                            if (o[this.name] !== undefined) {
+                                if (!o[this.name].push) {
+                                    o[this.name] = [o[this.name]];
+                                }
+                                o[this.name].push(this.value || '');
+                            } else {
+                                o[this.name] = this.value || '';
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'insertDepts',
+                            type: 'post',
+                            dataType: 'text',
+                            data: JSON.stringify(o),
+                            contentType: 'application/json;charset=utf-8',
+                            cache: false,
+                            async: true,
+                            success: function (result) {
+                                if (result == "增加成功") {
+                                    layer.msg(result, {icon: 1});
+                                    window.location.reload();
+                                } else {
+                                    layer.msg(result, {icon: 2});
+                                }
+                                return false;
+                            },
+                            error: function (result) {
+                                layer.msg('失败', {icon: 2});
+                                return false;
+                            }
+                        });
+                    }
+                    return false;
+                },
+                cancel: function (layero, index) {
+                    layer.closeAll();
+                }
+
+            });
+        });
+
+        //表格数据
+        $(".layui-colla-title").on("click", function () {
+            var deptClassCode = $(this).attr("name")
+            if (deptClassCode != null) {
+                var tableData = new Array();
+                $.ajax({
+                    url: 'deptTable?deptClassType=' + deptClassCode,
+                    type: 'get',
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        tableData = result['data'];
+                    },
+                    error: function (result) {
+                        layer.msg('失败', {icon: 2});
+                    }
+                });
+                table.render({
+                    elem: '#' + deptClassCode
+                    , initSort: {field: 'sort', type: 'asc'}
+                    , toolbar: '#toolbarDemo'
+                    , cellMinWidth: 80
+                    , page: false
+                    , limit: Number.MAX_VALUE
+                    , cols: [[
+                        {type: 'radio'}
+                        , {field: 'deptCode', align: 'center', width: 300, title: '科室编号'}
+                        , {field: 'deptName', align: 'center', width: 300, title: '科室名'}
+                        , {field: 'sort', sort: true, hide: true}
+                        , {field: 'deptClassType', hide: true}
+                        , {title: '操作', width: 300, align: 'center', toolbar: '#barDemo'}
+                    ]]
+                    , data: tableData
+                    , id: 'reload' + deptClassCode
+                });
+            }
+        });
+
+        //加载遮罩
+        function loading(msg) {
+            layer.msg(msg, {
+                icon: 16,
+                shade: [0.6, '#000005'],//遮罩的颜色与透明度
+                time: false  //取消自动关闭
+            })
+        };
+
+        //搜索表单监听
+        form.on('submit(search)', function (data) {
+            $(".layui-colla-content").attr('class', 'layui-colla-content');
+            if (data.field.searchDeptCode == '' && data.field.searchDeptName == '') {
+                return false;
+            }
+            loading("查询中");
+            $.ajax({
+                url: 'searchDept?deptCode=' + data.field.searchDeptCode + '&deptName=' + data.field.searchDeptName,
+                type: 'get',
+                cache: false,
+                async: true,
+                success: function (result) {
+                    layer.closeAll();
+                    var resultl = result['data'].length;
+                    if (resultl == 0){
+                        layer.msg('无数据', {icon: 7});
+                    }
+                    for (var i = 0; i < resultl; i++) {
+                        $("#zhankai" + result['data'][i]['deptClassType']).attr('class', 'layui-colla-content layui-show');
+                        var tableData = new Array();
+                        var deptClassType = result['data'][i]['deptClassType'];
+                        if (i == 0) {
+                            $.ajax({
+                                url: 'reloadDept?deptCode=' + data.field.searchDeptCode + '&deptName=' + data.field.searchDeptName + '&deptClassType=' + result['data'][i]['deptClassType'],
+                                type: 'get',
+                                cache: false,
+                                async: false,
+                                success: function (result) {
+                                    tableData = result['data'];
+                                },
+                                error: function (result) {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                            table.render({
+                                elem: '#' + deptClassType
+                                , initSort: {field: 'sort', type: 'asc'}
+                                , toolbar: '#toolbarDemo'
+                                , cellMinWidth: 80
+                                , page: false
+                                , limit: Number.MAX_VALUE
+                                , cols: [[
+                                    {type: 'radio'}
+                                    , {field: 'deptCode', align: 'center', width: 300, title: '科室编号'}
+                                    , {field: 'deptName', align: 'center', width: 300, title: '科室名'}
+                                    , {field: 'sort', sort: true, hide: true}
+                                    , {field: 'deptClassType', hide: true}
+                                    , {title: '操作', width: 300, align: 'center', toolbar: '#barDemo'}
+                                ]]
+                                , data: tableData
+                                , id: 'reload' + deptClassType
+                            });
+                        } else {
+                            if (deptClassType != result['data'][i - 1]['deptClassType']) {
+                                $.ajax({
+                                    url: 'reloadDept?deptCode=' + data.field.searchDeptCode + '&deptName=' + data.field.searchDeptName + '&deptClassType=' + deptClassType,
+                                    type: 'get',
+                                    cache: false,
+                                    async: false,
+                                    success: function (result) {
+                                        tableData = result['data'];
+                                    },
+                                    error: function (result) {
+                                        layer.msg('失败', {icon: 2});
+                                    }
+                                });
+                                table.render({
+                                    elem: '#' + deptClassType
+                                    , initSort: {field: 'sort', type: 'asc'}
+                                    , toolbar: '#toolbarDemo'
+                                    , cellMinWidth: 80
+                                    , page: false
+                                    , limit: Number.MAX_VALUE
+                                    , cols: [[
+                                        {type: 'radio'}
+                                        , {field: 'deptCode', align: 'center', width: 300, title: '科室编号'}
+                                        , {field: 'deptName', align: 'center', width: 300, title: '科室名'}
+                                        , {field: 'sort', sort: true, hide: true}
+                                        , {field: 'deptClassType', hide: true}
+                                        , {title: '操作', width: 300, align: 'center', toolbar: '#barDemo'}
+                                    ]]
+                                    , data: tableData
+                                    , id: 'reload' + deptClassType
+                                });
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    layer.msg('失败', {icon: 2});
+                }
+            });
+            return false;
+        });
+
+        //头工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch (obj.event) {
+                case 'up':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptClassType']];
+                    if (data[0]['sort'] == tableData[0]['sort']) {
+                        break;
+                    }
+                    var tableDatal = tableData.length;
+                    for (var i = 0; i < tableDatal; i++) {
+                        if (tableData[i]['deptCode'] == data[0]['deptCode']) {
+                            var temp = tableData[i]['sort'];
+                            tableData[i]['sort'] = tableData[i - 1]['sort'];
+                            tableData[i - 1]['sort'] = temp;
+                        }
+                    }
+                    table.render({
+                        elem: '#' + data[0]['deptClassType']
+                        , initSort: {field: 'sort', type: 'asc'}
+                        , toolbar: '#toolbarDemo'
+                        , cellMinWidth: 80
+                        , page: false
+                        , limit: Number.MAX_VALUE
+                        , cols: [[
+                            {type: 'radio'}
+                            , {field: 'deptCode', align: 'center', width: 300, title: '科室编号'}
+                            , {field: 'deptName', align: 'center', width: 300, title: '科室名'}
+                            , {field: 'sort', sort: true, hide: true}
+                            , {field: 'deptClassType', hide: true}
+                            , {title: '操作', width: 300, align: 'center', toolbar: '#barDemo'}
+                        ]]
+                        , data: tableData
+                        , id: 'reload' + data[0]['deptClassType']
+                    });
+                    break;
+                case 'down':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptClassType']];
+                    var tableDatal = tableData.length;
+                    if (data[0]['sort'] == tableData[tableDatal - 1]['sort']) {
+                        break;
+                    }
+                    for (var i = 0; i < tableDatal; i++) {
+                        if (tableData[i]['deptCode'] == data[0]['deptCode']) {
+                            var temp = tableData[i]['sort'];
+                            tableData[i]['sort'] = tableData[i + 1]['sort'];
+                            tableData[i + 1]['sort'] = temp;
+                        }
+                    }
+                    table.render({
+                        elem: '#' + data[0]['deptClassType']
+                        , initSort: {field: 'sort', type: 'asc'}
+                        , toolbar: '#toolbarDemo'
+                        , cellMinWidth: 80
+                        , page: false
+                        , limit: Number.MAX_VALUE
+                        , cols: [[
+                            {type: 'radio'}
+                            , {field: 'deptCode', align: 'center', width: 300, title: '科室编号'}
+                            , {field: 'deptName', align: 'center', width: 300, title: '科室名'}
+                            , {field: 'sort', sort: true, hide: true}
+                            , {field: 'deptClassType', hide: true}
+                            , {title: '操作', width: 300, align: 'center', toolbar: '#barDemo'}
+                        ]]
+                        , data: tableData
+                        , id: 'reload' + data[0]['deptClassType']
+                    });
+                    break;
+                case 'update':
+                    var data = checkStatus.data;
+                    var tableData = layui.table.cache["reload" + data[0]['deptClassType']];
+                    $.ajax({
+                        url: 'updateDeptSort',
+                        type: 'post',
+                        data: JSON.stringify(tableData),
+                        contentType: "application/json",
+                        cache: false,
+                        async: true,
+                        success: function (result) {
+                            layer.msg('成功', {icon: 1});
+                        },
+                        error: function (result) {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                    break;
+            }
+            ;
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            //删除
+            if (obj.event === 'del') {
+                layer.confirm('确认删除数据吗?', function (index) {
+                    $.ajax({
+                        url: 'deleteDept',
+                        type: 'post',
+                        dataType: 'text',
+                        data: {
+                            deptCode: data.deptCode
+                        },
+                        cache: false,
+                        async: true,
+                        success: function (result) {
+                            if (result == "true") {
+                                table.reload('reload' + data.deptClassType, {
+                                    url: 'deptTable?deptClassType=' + data.deptClassType
+                                });
+                                layer.msg('删除完成', {icon: 1});
+                            } else layer.msg('请先处理科室下的医生', {icon: 2});
+                        },
+                        error: function () {
+                            layer.msg('失败', {icon: 2});
+                        }
+                    });
+                });
+            }
+            //编辑
+            else if (obj.event === 'edit') {
+                form.val("form", data);
+                $("input[ name='originDept' ]").val(data.deptCode);
+                $("input[ name='originClass' ]").val(data.deptClassType);
+                $("input[ name='originName' ]").val(data.deptName);
+                layer.open({
+                    type: 1,
+                    area: ['400px', '400px'],
+                    title: '编辑'
+                    , content: $("#form" + data.deptClassType)
+                    , shade: 0.5
+                    , btn: ['提交', '重置']
+                    , success: function (layero) {
+                        var mask = $(".layui-layer-shade");
+                        mask.appendTo(layero.parent());
+                    }
+                    , btn1: function (index, layero) {
+                        if ($("input[ name='deptCode' ]").val() == null || $("input[ name='deptCode' ]").val() == '' || $("input[ name='deptName' ]").val() == null || $("input[ name='deptName' ]").val() == '') {
+                            layer.msg('请输入必填项', {icon: 2});
+                        } else {
+                            var o = {};
+                            var a = $('#form' + data.deptClassType).serializeArray();
+                            $.each(a, function () {
+                                if (o[this.name] !== undefined) {
+                                    if (!o[this.name].push) {
+                                        o[this.name] = [o[this.name]];
+                                    }
+                                    o[this.name].push(this.value || '');
+                                } else {
+                                    o[this.name] = this.value || '';
+                                }
+                            });
+                            $.ajax({
+                                url: 'editDept',
+                                type: 'post',
+                                dataType: 'text',
+                                data: JSON.stringify(o),
+                                contentType: 'application/json;charset=utf-8',
+                                cache: false,
+                                async: true,
+                                success: function (result) {
+                                    if (result == '-1') {
+                                        layer.msg('科室编号重复', {icon: 2});
+                                    } else if (result == '-2') {
+                                        layer.msg('科室名重复', {icon: 2});
+                                    } else if (result == '1') {
+                                        table.reload('reload' + data.deptClassType, {
+                                            url: 'deptTable?deptClassType=' + data.deptClassType
+                                        });
+                                        layer.closeAll();
+                                        layer.msg('编辑完成', {icon: 1});
+                                        // $('#form' + data.deptClassType).attr('id', 'form' + o['deptClassType']);
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg('失败', {icon: 2});
+                                }
+                            });
+                        }
+                    },
+                    btn2: function (index, layero) {
+                        $("input[ name='deptCode' ]").val("");
+                        $("input[ name='deptName' ]").val("");
+                        return false
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>
