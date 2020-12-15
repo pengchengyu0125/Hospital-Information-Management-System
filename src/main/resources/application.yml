@@ -5,9 +5,9 @@ spring:
 
   datasource:
 
-    url: 主数据库url
-    username: 用户名
-    password: 密码
+    url: jdbc:mysql:
+    username: 
+    password: 
 
     driverClassName: com.mysql.cj.jdbc.Driver
 

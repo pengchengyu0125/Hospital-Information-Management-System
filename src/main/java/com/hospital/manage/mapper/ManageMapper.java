@@ -13,6 +13,7 @@ import java.util.List;
 
 @Mapper
 public interface ManageMapper {
+
     //查找科室分类
     @Select("select * from t_mg_dept_class_type order by sort")
     List<DeptClass> deptClasses();
@@ -30,48 +31,28 @@ public interface ManageMapper {
     List<DoctorDTO> doctorDTOS();
 
     //模糊搜索医生
-    @Select("select * from t_mg_doctor where doctor_code regexp #{doctorCode} and doctor_name regexp #{doctorName} and title_code=#{titleCode} order by dept_code")
+    @Select("<script> select * from t_mg_doctor" +
+            "<if  test= \"(doctorCode != null and doctorCode != '') || (doctorName != null and doctorName != '') || (titleCode != null and titleCode != '')\"> where </if>" +
+            "<if  test= \"doctorName != null and doctorName != ''\"> doctor_name regexp #{doctorName} </if>" +
+            "<if  test= \"doctorName != null and doctorName != '' and doctorCode != null and doctorCode != ''\"> and </if>" +
+            "<if  test= \"doctorCode != null and doctorCode != ''\"> doctor_code regexp #{doctorCode} </if>" +
+            "<if  test= \"((doctorName != null and doctorName != '') || (doctorCode != null and doctorCode != '')) and titleCode != null and titleCode != ''\"> and </if>" +
+            "<if  test= \"titleCode != null and titleCode != ''\"> title_code=#{titleCode} </if>" +
+            " order by dept_code</script>")
     List<Doctor> searchList(@Param(value = "doctorCode") String doctorCode, @Param(value = "doctorName") String doctorName, @Param(value = "titleCode") String titleCode);
 
-    @Select("select * from t_mg_doctor where doctor_name regexp #{doctorName} and title_code=#{titleCode} order by dept_code")
-    List<Doctor> searchList1(@Param(value = "doctorName") String doctorName, @Param(value = "titleCode") String titleCode);
-
-    @Select("select * from t_mg_doctor where doctor_code regexp #{doctorCode} and title_code=#{titleCode} order by dept_code")
-    List<Doctor> searchList2(@Param(value = "doctorCode") String doctorCode, @Param(value = "titleCode") String titleCode);
-
-    @Select("select * from t_mg_doctor where doctor_code regexp #{doctorCode} and doctor_name regexp #{doctorName} order by dept_code")
-    List<Doctor> searchList3(@Param(value = "doctorCode") String doctorCode, @Param(value = "doctorName") String doctorName);
-
-    @Select("select * from t_mg_doctor where doctor_code regexp #{doctorCode} order by dept_code")
-    List<Doctor> searchList4(@Param(value = "doctorCode") String doctorCode);
-
-    @Select("select * from t_mg_doctor where doctor_name regexp #{doctorName} order by dept_code")
-    List<Doctor> searchList5(@Param(value = "doctorName") String doctorName);
-
-    @Select("select * from t_mg_doctor where title_code=#{titleCode} order by dept_code")
-    List<Doctor> searchList6(@Param(value = "titleCode") String titleCode);
-
     //模糊搜索重载
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_code regexp #{doctorCode} and doctor_name regexp #{doctorName} and title_code=#{titleCode} and a.dept_code=#{deptCode}")
+    @Select("<script> select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code" +
+            "<if  test= \"(deptCode != null and deptCode != '') || (doctorCode != null and doctorCode != '') || (doctorName != null and doctorName != '') || (titleCode != null and titleCode != '')\"> where </if>" +
+            "<if  test= \"deptCode != null and deptCode != ''\"> a.dept_code=#{deptCode} </if>" +
+            "<if  test= \"deptCode != null and deptCode != '' and doctorName != null and doctorName != ''\"> and </if>" +
+            "<if  test= \"doctorName != null and doctorName != ''\"> doctor_name regexp #{doctorName} </if>" +
+            "<if  test= \"((deptCode != null and deptCode != '') || (doctorName != null and doctorName != '')) and doctorCode != null and doctorCode != ''\"> and </if>" +
+            "<if  test= \"doctorCode != null and doctorCode != ''\"> doctor_code regexp #{doctorCode} </if>" +
+            "<if  test= \"((deptCode != null and deptCode != '') || (doctorName != null and doctorName != '') || (doctorCode != null and doctorCode != '')) and titleCode != null and titleCode != ''\"> and </if>" +
+            "<if  test= \"titleCode != null and titleCode != ''\"> title_code=#{titleCode} </if>" +
+            "</script>")
     List<Doctor> reloadList(@Param(value = "doctorCode") String doctorCode, @Param(value = "doctorName") String doctorName, @Param(value = "titleCode") String titleCode, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_name regexp #{doctorName} and title_code=#{titleCode} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList1(@Param(value = "doctorName") String doctorName, @Param(value = "titleCode") String titleCode, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_code regexp #{doctorCode} and title_code=#{titleCode} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList2(@Param(value = "doctorCode") String doctorCode, @Param(value = "titleCode") String titleCode, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_code regexp #{doctorCode} and doctor_name regexp #{doctorName} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList3(@Param(value = "doctorCode") String doctorCode, @Param(value = "doctorName") String doctorName, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_code regexp #{doctorCode} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList4(@Param(value = "doctorCode") String doctorCode, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where doctor_name regexp #{doctorName} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList5(@Param(value = "doctorName") String doctorName, @Param(value = "deptCode") String deptCode);
-
-    @Select("select a.*,b.dept_name from t_mg_doctor as a left join t_mg_hospital_dept as b on a.dept_code=b.dept_code where title_code=#{titleCode} and a.dept_code=#{deptCode}")
-    List<Doctor> reloadList6(@Param(value = "titleCode") String titleCode, @Param(value = "deptCode") String deptCode);
 
     //获取科室
     @Select("select * from t_mg_hospital_dept where dept_class_type=#{deptClassType}")

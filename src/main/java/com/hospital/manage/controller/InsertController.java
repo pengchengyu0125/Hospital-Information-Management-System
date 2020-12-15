@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * 新增功能Controller
+ */
 @Controller
 public class InsertController {
     @Autowired
@@ -205,7 +208,7 @@ public class InsertController {
     @ResponseBody
     @RequestMapping(value = "/insertDoctorList", method = RequestMethod.POST)
     public String insertDoctorList(HttpServletRequest request,
-                                         @RequestBody List<Doctor> doctorList) throws Exception {
+                                   @RequestBody List<Doctor> doctorList) throws Exception {
         //获取用户信息进行拦截
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
@@ -221,8 +224,7 @@ public class InsertController {
             //判断是否出现错误
             if (error != null) {
                 return error;
-            }
-            else {
+            } else {
                 logger.info("用户" + user.getUserName() + "批量导入医生信息");
                 return "1";
             }

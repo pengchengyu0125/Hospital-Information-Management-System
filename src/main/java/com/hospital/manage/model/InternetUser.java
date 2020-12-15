@@ -2,6 +2,9 @@ package com.hospital.manage.model;
 
 import lombok.Data;
 
+/***
+ * 互联网医生
+ */
 @Data
 public class InternetUser {
     private String username;

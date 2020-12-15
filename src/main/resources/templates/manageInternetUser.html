@@ -122,7 +122,7 @@
             , laypage = layui.laypage
             , $ = layui.jquery
 
-        var pathname = window.location.pathname.split('/')[1];
+        var pathname = window.location.pathname.split('/')[2];
         $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
 
         //表格数据
@@ -166,6 +166,7 @@
             , id: 'reload'
         });
 
+        //分页
         var page, size;
         laypage.render({
             elem: 'pagination'
@@ -337,6 +338,7 @@
             return false;
         });
 
+        //下拉框联动
         var list;
         layui.form.on('select(doctorFilter)', function (data) {
             if (data.value == 0){
@@ -359,6 +361,7 @@
             }
         });
 
+        //下拉框联动
         layui.form.on('select(codeFilter)', function (data) {
             $("#deptCode").find("option").remove();
             if (data.value != "") {

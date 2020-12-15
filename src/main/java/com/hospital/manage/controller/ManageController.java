@@ -7,7 +7,6 @@ import com.hospital.manage.dto.HospitalDTO;
 import com.hospital.manage.dto.UserDTO;
 import com.hospital.manage.model.*;
 import com.hospital.manage.service.DBChangeService;
-import com.hospital.manage.service.LoginService;
 import com.hospital.manage.service.ManageService;
 import com.hospital.manage.tools.DesEncoder;
 import org.apache.log4j.Logger;
@@ -21,15 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/***
+ * 信息管理Controller
+ */
 @Controller
 public class ManageController {
 
     @Autowired
     private ManageService manageService;
-
-    @Autowired
-    private LoginService loginService;
 
     @Autowired
     private DBChangeService dbChangeServiceImpl;
@@ -270,7 +268,7 @@ public class ManageController {
      */
     @GetMapping("/InternetDept")
     public String InternetDept(Model model,
-                       HttpServletRequest request) throws Exception {
+                               HttpServletRequest request) throws Exception {
         //获取用户信息进行拦截
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {

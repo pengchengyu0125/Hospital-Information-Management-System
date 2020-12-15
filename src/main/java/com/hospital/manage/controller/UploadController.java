@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/***
+ * 图片上传Controller
+ */
 @Controller
 public class UploadController {
 

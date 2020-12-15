@@ -173,7 +173,7 @@
             , form = layui.form
             , upload = layui.upload
 
-        var pathname = window.location.pathname.split('/')[1];
+        var pathname = window.location.pathname.split('/')[2];
         $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
 
         //表格数据
@@ -221,8 +221,6 @@
                     var mask = $(".layui-layer-shade");
                     mask.appendTo(layero.parent());
                     $('#upInsert').on("change", function (file) {
-                        console.log($('#upInsert').prop('files'));
-
                         var formData = new FormData();
                         var file = $('#upInsert').prop('files')[0];
                         var reader = new FileReader();
@@ -355,8 +353,6 @@
                         var mask = $(".layui-layer-shade");
                         mask.appendTo(layero.parent());
                         $('#upEdit').on("change", function (file) {
-                            console.log($('#upEdit').prop('files'));
-
                             var formData = new FormData();
                             var file = $('#upEdit').prop('files')[0];
                             var reader = new FileReader();

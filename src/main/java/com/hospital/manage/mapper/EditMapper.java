@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface EditMapper {
+
     //编辑医生信息
     @Update("update t_mg_doctor set icon_url=#{iconUrl}, doctor_name=#{doctorName}, title_code=#{titleCode}, job_code=#{jobCode}, major=#{major}, introduce=#{introduce}, dept_code=#{deptCode}, sort=#{sort} where doctor_code=#{doctorCode} and dept_code=#{originDept}")
     void editDoctor(Doctor doctor);

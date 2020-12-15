@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/***
+ * 科室数据格式
+ */
 @Data
 public class DeptData {
     private String deptClassCode;

@@ -12,7 +12,7 @@
             margin-top: 1%;
             background-color: #e7e7e7;
             width: 450px;
-            height: 600px;
+            height: 500px;
             float: left;
             z-index: 9999;
             position: fixed;
@@ -23,8 +23,7 @@
             width: 300px;
             height: 40px;
             padding-left: 130px;
-            padding-top: 30px;
-
+            padding-top: 5px;
         }
 
         .adminInput {
@@ -32,21 +31,19 @@
             height: 40px;
             font-size: 15px;
             border-radius: 0.5em;
-            /*margin-left: auto;*/
-            /*border: 1px solid #cccccc;*/
         }
 
         .passwordDiv {
             width: 300px;
             height: 40px;
             padding-left: 130px;
-            padding-top: 28px;
+            padding-top: 5px;
         }
 
         .cardDiv {
             width: 120px;
             height: 40px;
-            padding-top: 28px;
+            padding-top: 5px;
             padding-left: 14px;
             float: left;
         }
@@ -54,7 +51,7 @@
         .codeDiv {
             width: 100px;
             height: 40px;
-            padding-top: 28px;
+            padding-top: 5px;
             padding-right: 20px;
             float: left;
         }
@@ -84,17 +81,16 @@
         }
 
         .usernameLabel {
-            width: 60px;
             height: 30px;
             font-size: 16px;
             float: left;
             margin-left: 55px;
-            margin-top: 40px;
+            margin-top: 10px;
         }
 
         .usernameWrapDiv {
             width: 400px;
-            height: 70px;
+            height: 50px;
         }
 
         /*登陆表单样式 end*/
@@ -130,12 +126,13 @@
                     </div>
                     <div class="passwordDiv">
                         <i class="layui-icon layui-icon-password adminIcon"></i>
-                        <input type="password" name="password" id="password" lay-verify="password" placeholder="密码至少8位，且必须包含字母和数字"
+                        <input type="password" name="password" id="password" lay-verify="password"
+                               placeholder="密码至少8位，且必须包含字母和数字"
                                autocomplete="off" class="layui-input adminInput">
                     </div>
                 </div>
                 <div class="usernameWrapDiv">
-                    <div class="usernameLabel">
+                    <div class="usernameLabel" style="margin-left: 20px">
                         <label>再次输入密码:</label>
                     </div>
                     <div class="passwordDiv">
@@ -149,7 +146,7 @@
                         <label>手机号:</label>
                     </div>
                     <div class="usernameDiv">
-                        <input type="text" placeholder="请输入手机号" lay-verify="phone" autocomplete="off" id="phone"
+                        <input type="text" placeholder="请输入手机号" autocomplete="off" id="phone"
                                name="phone"
                                class="layui-input adminInput">
                     </div>
@@ -167,7 +164,7 @@
                     </div>
                 </div>
                 <div id="mpanel5" style="position: relative;left: 50px;top: 10px"></div>
-                <div class="layui-form-item" style="margin-top: 30px;">
+                <div class="layui-form-item" style="margin-top: 20px;">
                     <div class="layui-input-block">
                         <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">下一步</button>
                     </div>
@@ -175,48 +172,6 @@
             </form>
         </div>
     </div>
-    <!--<div class="layui-body" style="left: 20%;">
-        <form class="layui-form" id="form" style="margin-top: 20px;width: 65%">
-            <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
-                <div class="layui-input-block">
-                    <input type="text" name="username" id="username" lay-verify="title" autocomplete="off"
-                           placeholder="请输入用户名" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">手机号</label>
-                <div class="layui-input-block">
-                    <input type="text" placeholder="请输入手机号" autocomplete="off" id="phone" name="phone"
-                           class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">新密码</label>
-                <div class="layui-input-block">
-                    <input type="text" name="password" id="password" autocomplete="off"
-                           placeholder="请输入新密码" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">验证码</label>
-                <div class="layui-input-block">
-                    <input type="text" placeholder="请输入验证码" autocomplete="off" id="code" name="code" maxlength="6"
-                           class="layui-input" style="width: 50%;display: inline">
-                    <input type="button" class="layui-btn layui-btn-primary" value="获取验证码" id="sendBtn"
-                           style="width:41%;margin-left: 18px;border-color:#1e9fff !important;"></input>
-                </div>
-            </div>
-            <div class="layui-form-item" style="margin-left: 9%;">
-                <div id="mpanel5"></div>
-            </div>
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">下一步</button>
-                </div>
-            </div>
-        </form>
-    </div>-->
 
     <div class="layui-footer" style="left: 0">
         <!-- 底部固定区域 -->
@@ -241,15 +196,10 @@
                     return '请输入用户名';
                 }
             }
-            ,password: [
+            , password: [
                 /^(?=.*[0-9])(?=.*[a-zA-Z])(.{8,})$/
-                ,'密码至少8位，且必须包含字母和数字'
+                , '密码至少8位，且必须包含字母和数字'
             ]
-            , phone: function (value) {
-                if (phone.length != 11) {
-                    return '请输入手机号';
-                }
-            }
         });
 
         var $ = layui.jquery;
@@ -257,7 +207,6 @@
         //手机验证
         $('#sendBtn').on("click", function () {
             var phone = $("#phone").val();
-            console.log(phone.length);
             if (phone == '' || phone.length != 11) {
                 layer.msg("请输入正确的手机号！");
                 return;
@@ -272,7 +221,7 @@
                     success: function (data) {
                         if (data) {
                             timer();
-                            if (data['code']=='1'){
+                            if (data['code'] == '1') {
                                 layer.msg("获取验证码失败");
                             }
                         } else {
@@ -307,6 +256,7 @@
         }
 
         var flag = 0;
+        //图片验证
         $('#mpanel5').pointsVerify({
             defaultNum: 4,	//默认的文字数量
             checkNum: 2,	//校对的文字数量
@@ -338,7 +288,7 @@
             var code = $("#code").val();
             var password = $("#password").val();
             if (flag == 1) {
-                if ($("#password").val()==$("#second").val()){
+                if ($("#password").val() == $("#second").val()) {
                     $.ajax({
                         url: 'forgetPassword',
                         type: 'post',
@@ -366,8 +316,7 @@
                             layer.msg('失败', {icon: 2});
                         }
                     });
-                }
-                else
+                } else
                     layer.msg('两次输入密码不一致', {icon: 2});
             } else {
                 layer.msg('请先进行验证', {icon: 2});

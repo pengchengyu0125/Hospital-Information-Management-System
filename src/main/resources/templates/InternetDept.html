@@ -133,7 +133,7 @@
             , table = layui.table
             , form = layui.form
 
-        var pathname = window.location.pathname.split('/')[1];
+        var pathname = window.location.pathname.split('/')[2];
         $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
 
         //新增按钮点击事件
@@ -378,6 +378,7 @@
         table.on('toolbar(demo)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
             switch (obj.event) {
+                //上移
                 case 'up':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptClassType']];
@@ -421,6 +422,7 @@
                         , id: 'reload' + data[0]['deptClassType']
                     });
                     break;
+                //下移
                 case 'down':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptClassType']];
@@ -464,6 +466,7 @@
                         , id: 'reload' + data[0]['deptClassType']
                     });
                     break;
+                //更新排序
                 case 'update':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptClassType']];

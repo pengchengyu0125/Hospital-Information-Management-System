@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/***
+ * 功能模块Controller
+ */
 @Controller
 public class FunctionController {
     @Autowired

@@ -254,7 +254,7 @@
             , upload = layui.upload
             , treeSelect = layui.treeSelect;
 
-        var pathname = window.location.pathname.split('/')[1];
+        var pathname = window.location.pathname.split('/')[2];
         $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
 
         //新增按钮点击事件
@@ -471,6 +471,7 @@
             }
         });
 
+        //加载遮罩
         function loading(msg) {
             layer.msg(msg, {
                 icon: 16,
@@ -628,6 +629,7 @@
         table.on('toolbar(demo)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
             switch (obj.event) {
+                //上移
                 case 'up':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptCode']];
@@ -684,6 +686,7 @@
                         , id: 'reload' + data[0]['deptCode']
                     });
                     break;
+                //下移
                 case 'down':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptCode']];
@@ -740,6 +743,7 @@
                         , id: 'reload' + data[0]['deptCode']
                     });
                     break;
+                //更新顺序
                 case 'update':
                     var data = checkStatus.data;
                     var tableData = layui.table.cache["reload" + data[0]['deptCode']];
@@ -790,7 +794,9 @@
                         }
                     });
                 });
-            } else if (obj.event === 'edit') { //编辑
+            }
+            //编辑
+            else if (obj.event === 'edit') {
                 $(".layui-treeSelect.layui-unselect.layui-form-select").remove();
                 form.val("doctorForm", data);
                 $('#imageView' + data.doctorCode + data.deptCode).attr('src', data.iconUrl);
@@ -876,6 +882,7 @@
                                         table.reload('reload' + data.deptCode, {
                                             url: 'doctor?deptCode=' + data.deptCode
                                         });
+                                        //更新对应的标签id
                                         $('#form' + data.doctorCode + data.deptCode).attr('id', 'form' + data.doctorCode + o['deptCode']);
                                         $('#deptname' + data.doctorCode + data.deptCode).attr('id', 'deptname' + data.doctorCode + o['deptCode']);
                                         $('#up' + data.doctorCode + data.deptCode).attr('id', 'up' + data.doctorCode + o['deptCode']);
@@ -909,6 +916,7 @@
                 });
             }
 
+            //树状下拉选择框
             treeSelect.render({
                 // 选择器
                 elem: '#tree' + data.doctorCode + data.deptCode,
@@ -939,10 +947,6 @@
                             $('#className' + data.doctorCode + data.deptCode).attr('value', d['data'][i]['name']);
                         }
                     }
-                    /*                        console.log(data.doctorCode + data.deptCode);
-                                            console.log(d['current']['id']);
-                                            $("#tree" + data.doctorCode + data.deptCode).val(d['current']['id']);*/
-
                 },
                 // 加载完成后的回调函数
                 success: function (d) {

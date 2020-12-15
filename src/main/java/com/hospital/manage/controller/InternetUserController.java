@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/***
+ * 互联网医生Controller
+ */
 @Controller
 public class InternetUserController {
 
@@ -72,6 +75,7 @@ public class InternetUserController {
         dbChangeServiceImpl.changeDb(datasourceId);
         //获取互联网医生用户信息
         List<InternetUser> internetUsers = internetUserService.getInternetUsers(page, size, phone, uName, deptCode, isOnlineDoctor);
+        //获取数据总数
         int total = internetUserService.getTotal(phone, uName, deptCode, isOnlineDoctor);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("code", 0);

@@ -2,6 +2,9 @@ package com.hospital.manage.model;
 
 import lombok.Data;
 
+/***
+ * 科室
+ */
 @Data
 public class Department {
     private String deptCode;

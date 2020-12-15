@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 
+/***
+ * 登录Controller
+ */
 @Controller
 public class LoginController {
     //手机验证码url
@@ -123,6 +126,10 @@ public class LoginController {
         return map;
     }
 
+    /***
+     * 忘记密码页
+     * @return
+     */
     @GetMapping("/forget")
     public String forget() {
         return "forget";

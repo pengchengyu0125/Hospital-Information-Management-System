@@ -84,7 +84,7 @@
             , table = layui.table
             , treeSelect = layui.treeSelect;
 
-        var pathname = window.location.pathname.split('/')[1];
+        var pathname = window.location.pathname.split('/')[2];
         $("a[href="+pathname+"]").parents("li").attr("class","layui-nav-item layui-nav-itemed");
 
         $.ajax({
@@ -150,6 +150,7 @@
             },
         });
 
+        //查询所有点击按钮事件
         $('#all').on("click", function (e) {
             window.location.reload();
         });
@@ -174,7 +175,6 @@
                 return false;
             }
             else{
-                // loading("查询中");
                 $.ajax({
                     url: 'total',
                     type: 'post',
@@ -396,6 +396,7 @@
         ]
     };
 
+    //条状图
     var option2 = {
 
         tooltip: {

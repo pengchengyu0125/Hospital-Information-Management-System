@@ -3,6 +3,9 @@ package com.hospital.manage.model;
 import lombok.Data;
 import lombok.ToString;
 
+/***
+ * 数据源
+ */
 @Data
 @ToString
 public class DataSource {

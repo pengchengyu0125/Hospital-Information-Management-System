@@ -2,6 +2,9 @@ package com.hospital.manage.model;
 
 import lombok.Data;
 
+/***
+ * 医生
+ */
 @Data
 public class Doctor {
     private String doctorCode;

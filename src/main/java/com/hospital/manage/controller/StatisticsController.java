@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/***
+ * 网上咨询统计Controller
+ */
 @Controller
 public class StatisticsController {
     @Autowired

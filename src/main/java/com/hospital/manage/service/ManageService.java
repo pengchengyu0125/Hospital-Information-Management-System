@@ -64,21 +64,7 @@ public class ManageService {
      */
     public List<Doctor> searchDoctor(String doctorCode, String doctorName, String titleCode) {
         List<Doctor> searchDoctor = new ArrayList<>();
-        if (doctorCode != "" && doctorName != "" && titleCode != "") {
-            searchDoctor = manageMapper.searchList(doctorCode, doctorName, titleCode);
-        } else if (doctorCode == "" && doctorName != "" && titleCode != "") {
-            searchDoctor = manageMapper.searchList1(doctorName, titleCode);
-        } else if (doctorCode != "" && doctorName == "" && titleCode != "") {
-            searchDoctor = manageMapper.searchList2(doctorCode, titleCode);
-        } else if (doctorCode != "" && doctorName != "" && titleCode == "") {
-            searchDoctor = manageMapper.searchList3(doctorCode, doctorName);
-        } else if (doctorCode != "" && doctorName == "" && titleCode == "") {
-            searchDoctor = manageMapper.searchList4(doctorCode);
-        } else if (doctorCode == "" && doctorName != "" && titleCode == "") {
-            searchDoctor = manageMapper.searchList5(doctorName);
-        } else if (doctorCode == "" && doctorName == "" && titleCode != "") {
-            searchDoctor = manageMapper.searchList6(titleCode);
-        }
+        searchDoctor = manageMapper.searchList(doctorCode, doctorName, titleCode);
         return searchDoctor;
     }
 
@@ -92,21 +78,7 @@ public class ManageService {
      */
     public List<Doctor> searchReload(String doctorCode, String doctorName, String titleCode, String deptCode) {
         List<Doctor> searchDoctor = new ArrayList<>();
-        if (doctorCode != "" && doctorName != "" && titleCode != "") {
-            searchDoctor = manageMapper.reloadList(doctorCode, doctorName, titleCode, deptCode);
-        } else if (doctorCode == "" && doctorName != "" && titleCode != "") {
-            searchDoctor = manageMapper.reloadList1(doctorName, titleCode, deptCode);
-        } else if (doctorCode != "" && doctorName == "" && titleCode != "") {
-            searchDoctor = manageMapper.reloadList2(doctorCode, titleCode, deptCode);
-        } else if (doctorCode != "" && doctorName != "" && titleCode == "") {
-            searchDoctor = manageMapper.reloadList3(doctorCode, doctorName, deptCode);
-        } else if (doctorCode != "" && doctorName == "" && titleCode == "") {
-            searchDoctor = manageMapper.reloadList4(doctorCode, deptCode);
-        } else if (doctorCode == "" && doctorName != "" && titleCode == "") {
-            searchDoctor = manageMapper.reloadList5(doctorName, deptCode);
-        } else if (doctorCode == "" && doctorName == "" && titleCode != "") {
-            searchDoctor = manageMapper.reloadList6(titleCode, deptCode);
-        }
+        searchDoctor = manageMapper.reloadList(doctorCode, doctorName, titleCode, deptCode);
         return searchDoctor;
     }
 

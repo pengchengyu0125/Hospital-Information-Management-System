@@ -30,7 +30,7 @@ public class EditService {
     public String editDoctor(Doctor doctor) {
         //判断医生所属科室的编码是否改变
         if (!doctor.getDeptCode().equals(doctor.getOriginDept())) {
-            if (insertMapper.repeatDoctor(doctor.getDeptCode(),doctor.getDoctorCode()) > 0){
+            if (insertMapper.repeatDoctor(doctor.getDeptCode(), doctor.getDoctorCode()) > 0) {
                 return "-1";
             }
             String s = "1";

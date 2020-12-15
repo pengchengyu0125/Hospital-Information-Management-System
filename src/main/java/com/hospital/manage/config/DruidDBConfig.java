@@ -25,11 +25,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Author : JCccc
- * @CreateTime : 2019/10/22
- * @Description :数据库连接池配置
- **/
+/***
+ * 数据库连接池配置
+ */
 @Configuration
 @EnableTransactionManagement
 public class DruidDBConfig {

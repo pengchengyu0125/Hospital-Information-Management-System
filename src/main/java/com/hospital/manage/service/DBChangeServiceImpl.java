@@ -47,6 +47,7 @@ public class DBChangeServiceImpl implements DBChangeService {
             dataSourcesList.get(i).setPassword(encoder.decrypt(dataSourcesList.get(i).getPassword(), dataSourcesList.get(i).getIconUrl()));
         }
 
+        //获取要使用的数据库
         for (DataSource dataSource : dataSourcesList) {
             if (dataSource.getHospitalCode().equals(datasourceId)) {
                 System.out.println("需要使用的的数据源已经找到,datasourceId是：" + dataSource.getHospitalCode());
