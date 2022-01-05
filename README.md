@@ -1,7 +1,9 @@
-# manageHospital
-医院后台信息管理
-## 前端
-采用layui模板
-## 后端
-springboot框架
-适用多数据库切换
+# Hospital-Information-Management-System
+The system implements the basic functions for managing physician and patient information.
+## Front-end
+Vue.js + element-ui
+## Back-end
+Spring Boot
+Spring Cloud
+Redis
+Alibaba Cloud
