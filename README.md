@@ -3,7 +3,7 @@ The system implements the basic functions for managing physician and patient inf
 ## Front-end
 Vue.js + element-ui
 ## Back-end
-Spring Boot
-Spring Cloud
-Redis
-Alibaba Cloud
+Spring Boot  
+Spring Cloud  
+Redis  
+Alibaba Cloud  
